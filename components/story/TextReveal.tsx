@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 
 interface TextRevealProps {
   text: string
@@ -12,28 +12,53 @@ interface TextRevealProps {
 export default function TextReveal({ text, onComplete, speed = 80 }: TextRevealProps) {
   const [displayedText, setDisplayedText] = useState('')
   const [isComplete, setIsComplete] = useState(false)
+  const intervalRef = useRef<NodeJS.Timeout | null>(null)
+  const hasStartedRef = useRef(false)
 
   useEffect(() => {
-    let index = 0
-    let charIndex = 0
+    return () => {
+      if (hasStartedRef.current || isComplete) return
+      hasStartedRef.current = true
 
-    const interval = setInterval(() => {
-      if (index >= text.length) {
-        setIsComplete(true)
-        clearInterval(interval)
-        onComplete?.()
-        return
+      let index = 0
+      let charIndex = 0
+
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current)
+      intervalRef.current = null
+      setIsComplete(false)
+      setDisplayedText('')
+      index = 0
+      charIndex = 0
+      hasStartedRef.current = false
+      return
       }
 
-      // 1〜3文字ずつ表示して読みやすく
-      const charsToAdd = Math.min(3, text.length - index)
-      setDisplayedText(text.slice(0, index + charsToAdd))
-      index += charsToAdd
-      charIndex += charsToAdd
+      const interval = setInterval(() => {
+        if (index >= text.length) {
+          setIsComplete(true)
+          clearInterval(intervalRef.current!)
+          intervalRef.current = null
+          onComplete?.()
+          return
+        }
 
-    }, speed)
+        const charsToAdd = Math.min(3, text.length - index)
+        setDisplayedText(text.slice(0, index + charsToAdd))
+        index += charsToAdd
+        charIndex += charsToAdd
 
-    return () => clearInterval(interval)
+      }, speed)
+
+      intervalRef.current = interval
+    }
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current!)
+        intervalRef.current = null
+      }
+    }
   }, [text, speed, onComplete])
 
   return (
