@@ -70,8 +70,12 @@ export default function ResultPage() {
             saveProgress({ currentChapter: 'chapter2', currentSession: 1 })
           }
           if (chapterId === 'chapter2' && sessionNumber === 2 && result.correctCount >= 3) {
-            // 第二章セッション2完了で第三章へ（未実装）
-            // saveProgress({ currentChapter: 'chapter3', currentSession: 1 })
+            // 第二章セッション2完了で第三章へ
+            saveProgress({ currentChapter: 'chapter3', currentSession: 1 })
+          }
+          if (chapterId === 'chapter3' && sessionNumber === 2 && result.correctCount >= 3) {
+            // 第三章セッション2完了で第四章へ
+            saveProgress({ currentChapter: 'chapter4', currentSession: 1 })
           }
 
           // スコアを保存
@@ -103,6 +107,14 @@ export default function ResultPage() {
         '「317」という数字。それは時刻ではなく——部屋番号だったかもしれない。',
         '午後三時十七分。秋の匂い。',
         '古い写真。色褪せて顔は見えない。でも——その写真を大切にしていた自分の記憶がある。',
+      ],
+      chapter3: [
+        '断片が、少しずつ並び始めた。秋の日。金木犀。声。目。——物語の輪郭が、見えそうになっている。',
+        '「待っています」——その言葉の重さを、初めてちゃんと受け取った気がした。あの人は、ずっと待っていた。そして今も—',
+      ],
+      chapter4: [
+        '「忘れても、いいよ」——その言葉を、僕は受け取っていた。でも忘れた。それが——ずっと、痛かったのかもしれない。',
+        '「待っています」——その言葉の重さを、初めてちゃんと受け取った気がした。あの人は、ずっと待っていた。そして今も—',
       ],
     }
 
@@ -206,7 +218,7 @@ export default function ResultPage() {
               解放された記憶の断片
             </p>
             <p className="font-serif text-text-primary text-sm relative z-10">
-              * {getMemoryContent('chapter1', 1, score.correctCount)}
+              * {getMemoryContent(localStorage.getItem('current-chapter') || 'chapter1', parseInt(localStorage.getItem('current-session') || '1'), score.correctCount)}
             </p>
           </motion.div>
         )}

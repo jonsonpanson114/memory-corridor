@@ -8,11 +8,12 @@ import BlankTime from '@/components/training/BlankTime'
 import RecallInput from '@/components/training/RecallInput'
 import NumberConversion from '@/components/training/NumberConversion'
 import LinkMethod from '@/components/training/LinkMethod'
+import StoryMethod from '@/components/training/StoryMethod'
 import { getSession } from '@/lib/story-data'
 import { getPalace, savePalace, getProgress, saveProgress } from '@/lib/user-progress'
 import { useRouter } from 'next/navigation'
 
-type TrainingPhase = 'setup' | 'walkthrough' | 'blank' | 'recall' | 'number-conversion' | 'link-method'
+type TrainingPhase = 'setup' | 'walkthrough' | 'blank' | 'recall' | 'number-conversion' | 'link-method' | 'story-method'
 
 export default function TrainingPage() {
   const searchParams = useSearchParams()
@@ -32,11 +33,13 @@ export default function TrainingPage() {
     if (existingPalace) {
       setPalace(existingPalace)
 
-      // 第二章の場合は数字変換法、第三章の場合は連想法から開始
+      // 第二章の場合は数字変換法、第三章の場合は連想法、第四章の場合はストーリー法から開始
       if (chapterId === 'chapter2') {
         setPhase('number-conversion')
       } else if (chapterId === 'chapter3') {
         setPhase('link-method')
+      } else if (chapterId === 'chapter4') {
+        setPhase('story-method')
       } else {
         setPhase('walkthrough')
       }
@@ -65,6 +68,11 @@ export default function TrainingPage() {
 
   const handleLinkMethodComplete = (links: Record<number, any>) => {
     localStorage.setItem('link-method-links', JSON.stringify(links))
+    setPhase('blank')
+  }
+
+  const handleStoryMethodComplete = (order: Array<{ id: string; content: string }>) => {
+    localStorage.setItem('story-method-order', JSON.stringify(order))
     setPhase('blank')
   }
 
@@ -129,6 +137,13 @@ export default function TrainingPage() {
         <LinkMethod
           items={session.trainingData}
           onComplete={handleLinkMethodComplete}
+        />
+      )}
+
+      {phase === 'story-method' && session && (
+        <StoryMethod
+          items={session.trainingData}
+          onComplete={handleStoryMethodComplete}
         />
       )}
 
