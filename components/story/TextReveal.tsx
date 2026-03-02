@@ -9,21 +9,28 @@ interface TextRevealProps {
   speed?: number
 }
 
-export default function TextReveal({ text, onComplete, speed = 50 }: TextRevealProps) {
+export default function TextReveal({ text, onComplete, speed = 80 }: TextRevealProps) {
   const [displayedText, setDisplayedText] = useState('')
   const [isComplete, setIsComplete] = useState(false)
 
   useEffect(() => {
     let index = 0
+    let charIndex = 0
+
     const interval = setInterval(() => {
-      if (index < text.length) {
-        setDisplayedText(text.slice(0, index + 1))
-        index++
-      } else {
+      if (index >= text.length) {
         setIsComplete(true)
         clearInterval(interval)
         onComplete?.()
+        return
       }
+
+      // 1〜3文字ずつ表示して読みやすく
+      const charsToAdd = Math.min(3, text.length - index)
+      setDisplayedText(text.slice(0, index + charsToAdd))
+      index += charsToAdd
+      charIndex += charsToAdd
+
     }, speed)
 
     return () => clearInterval(interval)
@@ -36,6 +43,7 @@ export default function TextReveal({ text, onComplete, speed = 50 }: TextRevealP
       className="font-serif text-lg leading-relaxed tracking-wide text-text-primary"
     >
       {displayedText}
+      <span className="animate-pulse">|</span>
     </motion.p>
   )
 }
