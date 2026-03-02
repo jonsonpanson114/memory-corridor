@@ -105,6 +105,7 @@ export default function StoryPage({
           <h1 className="font-serif text-2xl md:text-3xl text-accent mb-2">
             {chapterId === 'chapter1' && '第一章「館の扉」'}
             {chapterId === 'chapter2' && '第二章「時計塔の秘密」'}
+            {chapterId === 'chapter3' && '第三章「霧の図書館」'}
           </h1>
           <p className="font-sans text-text-secondary text-sm">
             セッション {sessionNumber}

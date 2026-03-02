@@ -250,6 +250,75 @@ export const CHAPTERS: Record<string, Chapter> = {
       },
     ],
   },
+  chapter3: {
+    id: 'chapter3',
+    title: '霧の図書館',
+    mnemonicType: 'link',
+    sessions: [
+      {
+        id: 'chapter3-session1',
+        chapterId: 'chapter3',
+        sessionNumber: 1,
+        storyText: `十一日目の夢は、白い霧から始まった。
+
+館がある——はずだった。
+でも霧が濃くて、輪郭が見えなかった。
+
+歩いていくと、ふいに大きな扉が現れた。
+木製の、重そうな扉。
+金属の取っ手に、埃が積もっている。
+
+扉の上に、小さなプレートがあった。
+「図書館」と書いてある。`,
+        choices: [
+          { id: 'find_books', text: 'あの人の本はここにありますか' },
+          { id: 'why_fog', text: 'なぜ霧がかかっているんですか' },
+        ],
+        trainingData: [
+          { id: 'item1', content: '青いペン', type: 'word' },
+          { id: 'item2', content: '赤いリボン', type: 'word' },
+          { id: 'item3', content: '黒いノート', type: 'word' },
+          { id: 'item4', content: '銀のペンケース', type: 'word' },
+          { id: 'item5', content: '古い地図', type: 'word' },
+        ],
+      },
+      {
+        id: 'chapter3-session2',
+        chapterId: 'chapter3',
+        sessionNumber: 2,
+        storyText: `十二日目。
+
+霧が少しだけ晴れてきた。
+でも——図書館の中はまだ、見えないような気がした。
+
+ミラは本棚の間に立っていた。
+背表紙を指でなぞっていた。
+
+「ここは——記憶の図書館です。」
+
+「あなたが経験したこと、感じたこと、出会った人——
+　全部、ここに収められています。」
+
+見渡すと、天井まで届く本棚が、どこまでも続いていた。
+でも——霧がかかっていて、奥が見えなかった。
+
+「霧が濃いのは、まだ思い出せていない部分が多いからです。
+　記憶が戻るほど、霧が晴れます。」`,
+        choices: [
+          { id: 'find_books', text: 'あの人の本はここにありますか' },
+          { id: 'why_fog', text: 'なぜ霧がかかっているんですか' },
+        ],
+        trainingData: [
+          { id: 'item1', content: '写真集', type: 'word' },
+          { id: 'item2', content: '手紙', type: 'word' },
+          { id: 'item3', content: '絵本', type: 'word' },
+          { id: 'item4', content: '雑誌', type: 'word' },
+          { id: 'item5', content: '日記帳', type: 'word' },
+          { id: 'item6', content: '栞', type: 'word' },
+        ],
+      },
+    ],
+  },
 }
 
 export function getChapter(chapterId: string): Chapter | undefined {
