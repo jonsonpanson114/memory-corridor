@@ -64,6 +64,16 @@ export default function ResultPage() {
             unlockMemory(chapterId, memoryContent)
           }
 
+          // 章の進行を管理
+          if (chapterId === 'chapter1' && sessionNumber === 2 && result.correctCount >= 3) {
+            // 第一章セッション2完了で第二章へ
+            saveProgress({ currentChapter: 'chapter2', currentSession: 1 })
+          }
+          if (chapterId === 'chapter2' && sessionNumber === 2 && result.correctCount >= 3) {
+            // 第二章セッション2完了で第三章へ（未実装）
+            // saveProgress({ currentChapter: 'chapter3', currentSession: 1 })
+          }
+
           // スコアを保存
           localStorage.setItem('last-score', JSON.stringify({
             correctCount: result.correctCount,
@@ -88,6 +98,11 @@ export default function ResultPage() {
         '台所の朝の光。誰かがそこにいた。',
         '手元のカップから湯気が立ち上る。',
         '誰かの声がした。温かい声。',
+      ],
+      chapter2: [
+        '「317」という数字。それは時刻ではなく——部屋番号だったかもしれない。',
+        '午後三時十七分。秋の匂い。',
+        '古い写真。色褪せて顔は見えない。でも——その写真を大切にしていた自分の記憶がある。',
       ],
     }
 

@@ -6,11 +6,12 @@ import PalaceSetup from '@/components/training/PalaceSetup'
 import WalkThrough from '@/components/training/WalkThrough'
 import BlankTime from '@/components/training/BlankTime'
 import RecallInput from '@/components/training/RecallInput'
+import NumberConversion from '@/components/training/NumberConversion'
 import { getSession } from '@/lib/story-data'
-import { getPalace, savePalace } from '@/lib/user-progress'
+import { getPalace, savePalace, getProgress, saveProgress } from '@/lib/user-progress'
 import { useRouter } from 'next/navigation'
 
-type TrainingPhase = 'setup' | 'walkthrough' | 'blank' | 'recall'
+type TrainingPhase = 'setup' | 'walkthrough' | 'blank' | 'recall' | 'number-conversion'
 
 export default function TrainingPage() {
   const searchParams = useSearchParams()
@@ -18,8 +19,10 @@ export default function TrainingPage() {
   const sessionNumber = parseInt(searchParams.get('session') || '1')
 
   const session = getSession(chapterId, sessionNumber)
+  const progress = getProgress()
   const [phase, setPhase] = useState<TrainingPhase>('setup')
   const [palace, setPalace] = useState<{ name: string; places: string[] } | null>(null)
+  const [userWords, setUserWords] = useState<Record<number, string>>({})
   const router = useRouter()
 
   // 既存の記憶の宮殿をロード
@@ -27,9 +30,15 @@ export default function TrainingPage() {
     const existingPalace = getPalace()
     if (existingPalace) {
       setPalace(existingPalace)
-      setPhase('walkthrough')
+
+      // 第二章の場合は数字変換法から開始
+      if (chapterId === 'chapter2') {
+        setPhase('number-conversion')
+      } else {
+        setPhase('walkthrough')
+      }
     }
-  }, [])
+  }, [chapterId])
 
   const handlePalaceComplete = (newPalace: { name: string; places: string[] }) => {
     setPalace(newPalace)
@@ -43,6 +52,12 @@ export default function TrainingPage() {
 
   const handleBlankComplete = () => {
     setPhase('recall')
+  }
+
+  const handleNumberConversionComplete = (words: Record<number, string>) => {
+    setUserWords(words)
+    localStorage.setItem('number-conversion-words', JSON.stringify(words))
+    setPhase('blank')
   }
 
   const handleRecallSubmit = (answers: Array<{ itemId: string; answer: string }>) => {
@@ -93,6 +108,13 @@ export default function TrainingPage() {
 
       {phase === 'blank' && (
         <BlankTime duration={30} onComplete={handleBlankComplete} />
+      )}
+
+      {phase === 'number-conversion' && session && (
+        <NumberConversion
+          numbers={session.trainingData.map(item => item.content)}
+          onComplete={handleNumberConversionComplete}
+        />
       )}
 
       {phase === 'recall' && palace && (

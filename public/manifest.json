@@ -1,22 +1,76 @@
 {
   "name": "記憶の回廊",
   "short_name": "記憶の回廊",
-  "description": "ビジュアルノベル × 記憶術トレーニング",
+  "description": "ビジュアルノベル × 記憶術トレーニング。毎日10〜15分、物語を読み進めながら記憶術を体験する。",
   "start_url": "/",
   "display": "standalone",
+  "display_override": ["standalone", "window-controls-overlay"],
   "background_color": "#0c0905",
   "theme_color": "#0c0905",
   "orientation": "portrait",
+  "scope": "/",
+  "lang": "ja",
+  "dir": "ltr",
+  "categories": ["entertainment", "education", "games"],
   "icons": [
+    {
+      "src": "/icon-72.png",
+      "sizes": "72x72",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-96.png",
+      "sizes": "96x96",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-128.png",
+      "sizes": "128x128",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-144.png",
+      "sizes": "144x144",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-152.png",
+      "sizes": "152x152",
+      "type": "image/png"
+    },
     {
       "src": "/icon-192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-384.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "any"
     },
     {
       "src": "/icon-512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "物語を始める",
+      "short_name": "物語",
+      "description": "続きの物語を始める",
+      "url": "/story/chapter1",
+      "icons": [{ "src": "/icon-96.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "記憶の日記",
+      "short_name": "日記",
+      "description": "記憶の断片を見る",
+      "url": "/diary",
+      "icons": [{ "src": "/icon-96.png", "sizes": "96x96" }]
     }
   ]
 }

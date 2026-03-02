@@ -86,10 +86,11 @@ export default function Home() {
           whileTap={{ scale: 0.95 }}
         >
           <Link
-            href="/story/chapter1"
+            href={`/story/${progress.currentChapter}`}
             className="btn-primary inline-block font-serif text-lg"
           >
-            館の扉を開く
+            {progress.currentChapter === 'chapter1' && '館の扉を開く'}
+            {progress.currentChapter === 'chapter2' && '時計塔へ向かう'}
           </Link>
         </motion.div>
 
