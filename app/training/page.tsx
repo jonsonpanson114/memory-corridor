@@ -1,12 +1,13 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
 import PalaceSetup from '@/components/training/PalaceSetup'
 import WalkThrough from '@/components/training/WalkThrough'
 import BlankTime from '@/components/training/BlankTime'
 import RecallInput from '@/components/training/RecallInput'
 import { getSession } from '@/lib/story-data'
+import { getPalace, savePalace } from '@/lib/user-progress'
 import { useRouter } from 'next/navigation'
 
 type TrainingPhase = 'setup' | 'walkthrough' | 'blank' | 'recall'
@@ -21,8 +22,18 @@ export default function TrainingPage() {
   const [palace, setPalace] = useState<{ name: string; places: string[] } | null>(null)
   const router = useRouter()
 
+  // 既存の記憶の宮殿をロード
+  useEffect(() => {
+    const existingPalace = getPalace()
+    if (existingPalace) {
+      setPalace(existingPalace)
+      setPhase('walkthrough')
+    }
+  }, [])
+
   const handlePalaceComplete = (newPalace: { name: string; places: string[] }) => {
     setPalace(newPalace)
+    savePalace(newPalace)
     setPhase('walkthrough')
   }
 
@@ -35,7 +46,7 @@ export default function TrainingPage() {
   }
 
   const handleRecallSubmit = (answers: Array<{ itemId: string; answer: string }>) => {
-    // 結果をローカルストレージに保存（フェーズ2でVercel KVに移行）
+    // 結果をローカルストレージに保存
     localStorage.setItem('training-answers', JSON.stringify(answers))
     localStorage.setItem('training-palace', JSON.stringify(palace))
 
@@ -53,6 +64,21 @@ export default function TrainingPage() {
 
   return (
     <main className="min-h-screen flex flex-col p-4 md:p-8">
+      {/* ヘッダー */}
+      <div className="max-w-md mx-auto w-full mb-8">
+        <div className="flex items-center justify-between">
+          <Link
+            href="/"
+            className="font-sans text-text-secondary text-sm hover:text-accent transition-colors"
+          >
+            ← 戻る
+          </Link>
+          <p className="font-sans text-text-secondary text-sm">
+            セッション {sessionNumber}
+          </p>
+        </div>
+      </div>
+
       {phase === 'setup' && (
         <PalaceSetup onComplete={handlePalaceComplete} />
       )}
@@ -79,3 +105,5 @@ export default function TrainingPage() {
     </main>
   )
 }
+
+import Link from 'next/link'

@@ -1,11 +1,18 @@
 'use client'
 
-import { use, useState } from 'react'
+import { use, useState, useEffect } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { getSession } from '@/lib/story-data'
 import TextReveal from '@/components/story/TextReveal'
 import ChoiceButton from '@/components/story/ChoiceButton'
 import CandleAmbient from '@/components/story/CandleAmbient'
+
+interface GeneratedStory {
+  storyText: string
+  miraResponse: string
+  nextHint: string
+}
 
 export default function StoryPage({
   params,
@@ -13,9 +20,72 @@ export default function StoryPage({
   params: Promise<{ chapterId: string }>
 }) {
   const { chapterId } = use(params)
-  const session = getSession(chapterId, 1)
+  const searchParams = useSearchParams()
+  const router = useRouter()
+
+  const sessionNumber = parseInt(searchParams.get('session') || '1')
+  const session = getSession(chapterId, sessionNumber)
   const [showChoices, setShowChoices] = useState(false)
   const [selectedChoice, setSelectedChoice] = useState<string | null>(null)
+  const [generatedStory, setGeneratedStory] = useState<GeneratedStory | null>(null)
+  const [loadingResponse, setLoadingResponse] = useState(false)
+  const [miraResponse, setMiraResponse] = useState<string | null>(null)
+
+  // ユーザーの前回スコアを取得
+  const lastScore = JSON.parse(localStorage.getItem('last-score') || 'null')
+
+  // 選択肢を選んだときにGeminiからミラの反応を生成
+  useEffect(() => {
+    async function fetchMiraResponse() {
+      if (!selectedChoice || loadingResponse) return
+
+      setLoadingResponse(true)
+      try {
+        const response = await fetch('/api/generate-story', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            chapterId,
+            sessionNumber,
+            lastScore,
+            userChoice: selectedChoice,
+            memoryFragment: null,
+          }),
+        })
+
+        if (response.ok) {
+          const data = await response.json()
+          setMiraResponse(data.miraResponse)
+          // 次回予告を保存
+          if (data.nextHint) {
+            localStorage.setItem('next-hint', data.nextHint)
+          }
+        }
+      } catch (error) {
+        console.error('Failed to fetch mira response:', error)
+      } finally {
+        setLoadingResponse(false)
+      }
+    }
+
+    fetchMiraResponse()
+  }, [selectedChoice, chapterId, sessionNumber, lastScore, loadingResponse])
+
+  // 選択肢をクリックしたとき
+  const handleChoiceSelect = (choiceId: string) => {
+    setSelectedChoice(choiceId)
+    // 選択した選択肢を保存
+    localStorage.setItem('selected-choice', choiceId)
+  }
+
+  // トレーニングへ進むとき
+  const handleProceedToTraining = () => {
+    localStorage.setItem('current-chapter', chapterId)
+    localStorage.setItem('current-session', sessionNumber.toString())
+    router.push('/training')
+  }
 
   if (!session) {
     return (
@@ -23,10 +93,6 @@ export default function StoryPage({
         <p className="text-text-primary">章が見つかりません</p>
       </div>
     )
-  }
-
-  const handleChoiceSelect = (choiceId: string) => {
-    setSelectedChoice(choiceId)
   }
 
   return (
@@ -40,7 +106,7 @@ export default function StoryPage({
             第一章「館の扉」
           </h1>
           <p className="font-sans text-text-secondary text-sm">
-            第一話「目覚め」
+            セッション {sessionNumber}
           </p>
         </div>
 
@@ -67,20 +133,49 @@ export default function StoryPage({
           </div>
         )}
 
+        {/* ミラの反応 */}
+        {selectedChoice && miraResponse && (
+          <div className="mt-8 p-6 bg-accent/10 border border-accent/30 rounded">
+            <p className="font-serif text-text-primary leading-relaxed">
+              **ミラ：**
+            </p>
+            <p className="font-serif text-text-primary leading-relaxed mt-2">
+              {miraResponse}
+            </p>
+          </div>
+        )}
+
+        {/* ローディング */}
+        {selectedChoice && loadingResponse && (
+          <div className="mt-8 text-center">
+            <motion.div
+              animate={{
+                opacity: [0.3, 0.7, 0.3],
+              }}
+              transition={{
+                duration: 3,
+                repeat: Infinity,
+                ease: 'easeInOut',
+              }}
+              className="w-12 h-12 bg-accent/20 rounded-full mx-auto"
+            />
+          </div>
+        )}
+
         {/* 選択後の遷移ボタン */}
-        {selectedChoice && (
+        {selectedChoice && miraResponse && (
           <div className="mt-8 text-center">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               className="space-y-4"
             >
-              <Link
-                href="/training"
-                className="btn-primary inline-block font-serif text-lg"
+              <button
+                onClick={handleProceedToTraining}
+                className="btn-primary font-serif text-lg"
               >
                 記憶術へ進む
-              </Link>
+              </button>
               <p className="font-sans text-text-secondary text-sm mt-4">
                 自分の場所——記憶の宮殿を準備してください
               </p>

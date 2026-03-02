@@ -6,11 +6,13 @@ import Link from 'next/link'
 import ScoreCandles from '@/components/result/ScoreCandles'
 import NarrativeText from '@/components/result/NarrativeText'
 import { getSession } from '@/lib/story-data'
+import { updateScore, incrementSession, unlockMemory } from '@/lib/user-progress'
 import type { ScoreResult } from '@/types/training'
 
 export default function ResultPage() {
   const [score, setScore] = useState<ScoreResult | null>(null)
   const [loading, setLoading] = useState(true)
+  const [nextHint, setNextHint] = useState<string>('')
 
   useEffect(() => {
     async function fetchScore() {
@@ -18,6 +20,7 @@ export default function ResultPage() {
       const palaceStr = localStorage.getItem('training-palace')
       const chapterId = localStorage.getItem('current-chapter') || 'chapter1'
       const sessionNumber = parseInt(localStorage.getItem('current-session') || '1')
+      const storedNextHint = localStorage.getItem('next-hint') || ''
 
       if (!answersStr || !palaceStr) {
         setLoading(false)
@@ -32,6 +35,8 @@ export default function ResultPage() {
         setLoading(false)
         return
       }
+
+      setNextHint(storedNextHint)
 
       try {
         const response = await fetch('/api/score', {
@@ -49,6 +54,22 @@ export default function ResultPage() {
         if (response.ok) {
           const result = await response.json()
           setScore(result)
+
+          // 進捗を更新
+          updateScore(result.correctCount, result.totalCount)
+
+          // 記憶の断片を解放
+          if (result.correctCount >= 3) {
+            const memoryContent = getMemoryContent(chapterId, sessionNumber, result.correctCount)
+            unlockMemory(chapterId, memoryContent)
+          }
+
+          // スコアを保存
+          localStorage.setItem('last-score', JSON.stringify({
+            correctCount: result.correctCount,
+            totalCount: result.totalCount,
+            timestamp: Date.now(),
+          }))
         }
       } catch (error) {
         console.error('Failed to fetch score:', error)
@@ -59,6 +80,31 @@ export default function ResultPage() {
 
     fetchScore()
   }, [])
+
+  // 記憶の断片の内容を取得
+  function getMemoryContent(chapterId: string, sessionNumber: number, correctCount: number): string {
+    const memories: Record<string, string[]> = {
+      chapter1: [
+        '台所の朝の光。誰かがそこにいた。',
+        '手元のカップから湯気が立ち上る。',
+        '誰かの声がした。温かい声。',
+      ],
+    }
+
+    const chapterMemories = memories[chapterId] || []
+    const index = Math.min(Math.floor(correctCount / 2), chapterMemories.length - 1)
+    return chapterMemories[index]
+  }
+
+  // スコアに応じた結果タイトル
+  function getResultTitle(correctCount: number, totalCount: number): string {
+    const percentage = correctCount / totalCount
+
+    if (percentage >= 0.8) return '星の降る夜'
+    if (percentage >= 0.6) return '月明かりの下'
+    if (percentage >= 0.4) return '曇りの空'
+    return '霧の中'
+  }
 
   if (loading) {
     return (
@@ -87,6 +133,9 @@ export default function ResultPage() {
     )
   }
 
+  const percentage = score.correctCount / score.totalCount
+  const resultTitle = getResultTitle(score.correctCount, score.totalCount)
+
   return (
     <main className="min-h-screen flex flex-col p-4 md:p-8">
       <div className="flex-1 max-w-md mx-auto w-full">
@@ -97,7 +146,7 @@ export default function ResultPage() {
           className="text-center mb-8"
         >
           <h1 className="font-serif text-2xl text-text-primary mb-2">
-            試練の結果
+            {resultTitle}
           </h1>
           <p className="font-sans text-text-secondary text-sm">
             {score.correctCount} / {score.totalCount}
@@ -116,50 +165,88 @@ export default function ResultPage() {
           feedback={score.feedback}
         />
 
-        {/* 記憶の断片（固定値） */}
+        {/* 記憶の断片（動的） */}
         {score.correctCount >= 3 && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 2 }}
+            className="mt-8 p-6 bg-accent/10 border border-accent/30 rounded text-center relative overflow-hidden"
+          >
+            {/* 背景の光のエフェクト */}
+            <motion.div
+              animate={{
+                opacity: [0, 0.2, 0],
+                scale: [1, 1.5, 1],
+              }}
+              transition={{
+                duration: 4,
+                repeat: Infinity,
+                ease: 'easeInOut',
+              }}
+              className="absolute inset-0 bg-accent/20 pointer-events-none"
+            />
+
+            <p className="font-sans text-text-secondary text-xs mb-2 relative z-10">
+              解放された記憶の断片
+            </p>
+            <p className="font-serif text-text-primary text-sm relative z-10">
+              * {getMemoryContent('chapter1', 1, score.correctCount)}
+            </p>
+          </motion.div>
+        )}
+
+        {/* 激励メッセージ（低スコアの場合） */}
+        {percentage < 0.4 && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 2 }}
-            className="mt-8 p-4 bg-accent/10 border border-accent/30 rounded text-center"
+            className="mt-8 p-4 bg-background/50 border border-text-secondary/20 rounded text-center"
           >
-            <p className="font-sans text-text-secondary text-xs mb-2">
-              解放された記憶の断片
-            </p>
-            <p className="font-serif text-text-primary text-sm">
-              台所の朝の光。誰かがそこにいた。
+            <p className="font-serif text-text-secondary text-sm">
+              大丈夫です。記憶は時間をかけて戻ります。
+              <br />
+              明日また、歩いてみましょう。
             </p>
           </motion.div>
         )}
 
         {/* 次回予告 */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 2.5 }}
-          className="mt-8 text-center"
-        >
-          <p className="font-sans text-text-secondary/50 text-xs mb-2">
-            次回予告
-          </p>
-          <p className="font-serif text-text-secondary text-sm">
-            明日——ミラは、時計塔に何かが埋まっていると言った。
-          </p>
-        </motion.div>
+        {nextHint && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 2.5 }}
+            className="mt-8 text-center"
+          >
+            <p className="font-sans text-text-secondary/50 text-xs mb-2">
+              次回予告
+            </p>
+            <p className="font-serif text-text-secondary text-sm">
+              {nextHint}
+            </p>
+          </motion.div>
+        )}
 
-        {/* ホームへ戻る */}
+        {/* ボタン */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 3 }}
-          className="mt-12 text-center"
+          className="mt-12 space-y-4"
         >
           <Link
             href="/"
-            className="btn-primary inline-block font-serif text-lg"
+            className="btn-primary block font-serif text-lg"
           >
             館を出る
+          </Link>
+          <Link
+            href="/diary"
+            className="block font-sans text-text-secondary text-sm hover:text-accent transition-colors"
+          >
+            記憶の日記を見る
           </Link>
         </motion.div>
       </div>
