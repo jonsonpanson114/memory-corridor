@@ -1,0 +1,32 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-background text-text-primary;
+  }
+}
+
+@layer components {
+  .text-story {
+    @apply font-serif text-lg leading-relaxed tracking-wide;
+  }
+
+  .btn-primary {
+    @apply px-6 py-3 bg-accent/20 hover:bg-accent/30 text-text-primary border border-accent/50 rounded transition-colors duration-200;
+  }
+
+  .candle-glow {
+    animation: glow 3s ease-in-out infinite alternate;
+  }
+
+  @keyframes glow {
+    from {
+      box-shadow: 0 0 10px rgba(200, 160, 80, 0.3);
+    }
+    to {
+      box-shadow: 0 0 20px rgba(200, 160, 80, 0.6);
+    }
+  }
+}

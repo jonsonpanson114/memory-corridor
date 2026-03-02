@@ -1,0 +1,81 @@
+'use client'
+
+import { useState } from 'react'
+import { useSearchParams } from 'next/navigation'
+import PalaceSetup from '@/components/training/PalaceSetup'
+import WalkThrough from '@/components/training/WalkThrough'
+import BlankTime from '@/components/training/BlankTime'
+import RecallInput from '@/components/training/RecallInput'
+import { getSession } from '@/lib/story-data'
+import { useRouter } from 'next/navigation'
+
+type TrainingPhase = 'setup' | 'walkthrough' | 'blank' | 'recall'
+
+export default function TrainingPage() {
+  const searchParams = useSearchParams()
+  const chapterId = searchParams.get('chapter') || 'chapter1'
+  const sessionNumber = parseInt(searchParams.get('session') || '1')
+
+  const session = getSession(chapterId, sessionNumber)
+  const [phase, setPhase] = useState<TrainingPhase>('setup')
+  const [palace, setPalace] = useState<{ name: string; places: string[] } | null>(null)
+  const router = useRouter()
+
+  const handlePalaceComplete = (newPalace: { name: string; places: string[] }) => {
+    setPalace(newPalace)
+    setPhase('walkthrough')
+  }
+
+  const handleWalkThroughComplete = () => {
+    setPhase('blank')
+  }
+
+  const handleBlankComplete = () => {
+    setPhase('recall')
+  }
+
+  const handleRecallSubmit = (answers: Array<{ itemId: string; answer: string }>) => {
+    // 結果をローカルストレージに保存（フェーズ2でVercel KVに移行）
+    localStorage.setItem('training-answers', JSON.stringify(answers))
+    localStorage.setItem('training-palace', JSON.stringify(palace))
+
+    // 結果画面へ遷移
+    router.push('/result')
+  }
+
+  if (!session) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-text-primary">セッションが見つかりません</p>
+      </div>
+    )
+  }
+
+  return (
+    <main className="min-h-screen flex flex-col p-4 md:p-8">
+      {phase === 'setup' && (
+        <PalaceSetup onComplete={handlePalaceComplete} />
+      )}
+
+      {phase === 'walkthrough' && palace && (
+        <WalkThrough
+          items={session.trainingData}
+          places={palace.places}
+          onComplete={handleWalkThroughComplete}
+        />
+      )}
+
+      {phase === 'blank' && (
+        <BlankTime duration={30} onComplete={handleBlankComplete} />
+      )}
+
+      {phase === 'recall' && palace && (
+        <RecallInput
+          items={session.trainingData}
+          places={palace.places}
+          onSubmit={handleRecallSubmit}
+        />
+      )}
+    </main>
+  )
+}

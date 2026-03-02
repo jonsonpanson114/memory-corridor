@@ -1,7 +1,14 @@
 {
   "permissions": {
     "allow": [
-      "Bash(git init)"
+      "Bash(git init)",
+      "Bash(gh repo create memory-corridor --public --source=. --remote=origin --push)",
+      "Bash(gh auth login)",
+      "Bash(git branch -M main)",
+      "Bash(npx create-next-app@latest . --typescript --tailwind --app --no-src-dir --import-alias \"@/*\" --use-npm)",
+      "Bash(npm init -y)",
+      "Bash(npm install next@latest react@latest react-dom@latest typescript @types/node @types/react @types/react-dom tailwindcss postcss autoprefixer framer-motion)",
+      "Bash(npm install @google/generative-ai)"
     ]
   }
 }
