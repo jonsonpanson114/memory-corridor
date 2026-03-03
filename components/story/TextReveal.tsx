@@ -12,7 +12,7 @@ interface TextRevealProps {
 export default function TextReveal({ text, onComplete, speed = 200 }: TextRevealProps) {
   const [displayedText, setDisplayedText] = useState('')
   const [isComplete, setIsComplete] = useState(false)
-  const intervalRef = useRef<NodeJS.Timeout | null>(null)
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
   const hasStartedRef = useRef(false)
 
   useEffect(() => {
@@ -24,27 +24,32 @@ export default function TextReveal({ text, onComplete, speed = 200 }: TextReveal
     hasStartedRef.current = true
     let index = 0
 
-    const interval = setInterval(() => {
+    const displayNextChar = () => {
       if (index >= text.length) {
         setIsComplete(true)
-        clearInterval(intervalRef.current!)
-        intervalRef.current = null
+        timeoutRef.current = null
         onComplete?.()
         return
       }
 
       // 1回に1文字ずつ追加
       setDisplayedText(prev => text.slice(0, index + 1))
+
+      // 次の文字を表示するまでの待ち時間を計算
+      const nextChar = text[index]
+      const isPunctuation = nextChar === '。' || nextChar === '、'
+      const nextDelay = isPunctuation ? speed * 3 : speed  // 句読点は3倍待つ
+
       index += 1
+      timeoutRef.current = setTimeout(displayNextChar, nextDelay)
+    }
 
-    }, speed)
-
-    intervalRef.current = interval
+    timeoutRef.current = setTimeout(displayNextChar, speed)
 
     return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current!)
-        intervalRef.current = null
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+        timeoutRef.current = null
       }
     }
   }, [text, speed])
