@@ -453,6 +453,64 @@ export const CHAPTERS: Record<string, Chapter> = {
       },
     ],
   },
+  chapter5: {
+    id: 'chapter5',
+    title: '鏡の回廊',
+    mnemonicType: 'palace',
+    sessions: [
+      {
+        id: 'chapter5-session1',
+        chapterId: 'chapter5',
+        sessionNumber: 1,
+        storyText: `二十一日目。
+
+夢に入ると、館の様子が変わっていた。
+
+廊下が——鏡でできていた。
+
+左も右も、天井も。
+どこを見ても、自分が映っている。
+
+その中に——ミラも映っていた。
+でも、ミラの映り方が、少し違った。`,
+        choices: [
+          { id: 'mira_is_madoka', text: 'ミラは——まどかですか' },
+          { id: 'who_in_mirror', text: '鏡の中の人は、誰ですか' },
+        ],
+        trainingData: [
+          { id: 'item1', content: '台所の朝', type: 'palace' },
+          { id: 'item2', content: '「317」', type: 'palace' },
+          { id: 'item3', content: '金木犀の香り', type: 'palace' },
+          { id: 'item4', content: '「待っています」', type: 'palace' },
+          { id: 'item5', content: 'まどかの笑顔', type: 'palace' },
+        ],
+      },
+      {
+        id: 'chapter5-session2',
+        chapterId: 'chapter5',
+        sessionNumber: 2,
+        storyText: `二十二日目。
+
+鏡の回廊を歩くと、
+今日は自分の姿がはっきり見えた。
+
+そしてミラの姿も——
+昨日より、少しまどかに近く見えた。`,
+        choices: [
+          { id: 'remember_madoka', text: 'それを覚えています' },
+          { id: 'why_madoka_left', text: 'なぜまどかはそれを残したんでしょう' },
+        ],
+        trainingData: [
+          { id: 'item1', content: 'まどかと記憶術', type: 'palace' },
+          { id: 'item2', content: '病院の廊下', type: 'palace' },
+          { id: 'item3', content: '「また来てね」', type: 'palace' },
+          { id: 'item4', content: '別れの日', type: 'palace' },
+          { id: 'item5', content: 'ミラの存在', type: 'palace' },
+          { id: 'item6', content: '記憶の宮殿', type: 'palace' },
+        ],
+      },
+    ],
+  },
 }
 
 export function getChapter(chapterId: string): Chapter | undefined {

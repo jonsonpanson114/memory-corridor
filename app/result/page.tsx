@@ -77,6 +77,10 @@ export default function ResultPage() {
             // 第三章セッション2完了で第四章へ
             saveProgress({ currentChapter: 'chapter4', currentSession: 1 })
           }
+          if (chapterId === 'chapter4' && sessionNumber === 2 && result.correctCount >= 3) {
+            // 第四章セッション2完了で第五章へ
+            saveProgress({ currentChapter: 'chapter5', currentSession: 1 })
+          }
 
           // スコアを保存
           localStorage.setItem('last-score', JSON.stringify({
@@ -115,6 +119,10 @@ export default function ResultPage() {
       chapter4: [
         '「忘れても、いいよ」——その言葉を、僕は受け取っていた。でも忘れた。それが——ずっと、痛かったのかもしれない。',
         '「待っています」——その言葉の重さを、初めてちゃんと受け取った気がした。あの人は、ずっと待っていた。そして今も—',
+      ],
+      chapter5: [
+        'ミラは——まどかが残した記憶の投影。僕が思い出したことで、役割を終える。',
+        '「また来てね」——別れの言葉じゃなかった。続きの言葉だった。僕は——続きを見たくなかったから。',
       ],
     }
 

@@ -93,6 +93,7 @@ export default function Home() {
             {progress.currentChapter === 'chapter2' && '時計塔へ向かう'}
             {progress.currentChapter === 'chapter3' && '図書館へ向かう'}
             {progress.currentChapter === 'chapter4' && '庭園へ向かう'}
+            {progress.currentChapter === 'chapter5' && '鏡の回廊へ向かう'}
           </Link>
         </motion.div>
 

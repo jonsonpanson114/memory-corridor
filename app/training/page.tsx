@@ -13,7 +13,7 @@ import { getSession } from '@/lib/story-data'
 import { getPalace, savePalace, getProgress, saveProgress } from '@/lib/user-progress'
 import { useRouter } from 'next/navigation'
 
-type TrainingPhase = 'setup' | 'walkthrough' | 'blank' | 'recall' | 'number-conversion' | 'link-method' | 'story-method'
+type TrainingPhase = 'setup' | 'walkthrough' | 'blank' | 'recall' | 'number-conversion' | 'link-method' | 'story-method' | 'palace-final'
 
 export default function TrainingPage() {
   const searchParams = useSearchParams()
@@ -33,13 +33,15 @@ export default function TrainingPage() {
     if (existingPalace) {
       setPalace(existingPalace)
 
-      // 第二章の場合は数字変換法、第三章の場合は連想法、第四章の場合はストーリー法から開始
+      // 第二章の場合は数字変換法、第三章の場合は連想法、第四章の場合はストーリー法、第五章の場合は宮殿統合から開始
       if (chapterId === 'chapter2') {
         setPhase('number-conversion')
       } else if (chapterId === 'chapter3') {
         setPhase('link-method')
       } else if (chapterId === 'chapter4') {
         setPhase('story-method')
+      } else if (chapterId === 'chapter5') {
+        setPhase('walkthrough') // 第五章は記憶の宮殿の統合、walkthroughから開始
       } else {
         setPhase('walkthrough')
       }
@@ -73,6 +75,11 @@ export default function TrainingPage() {
 
   const handleStoryMethodComplete = (order: Array<{ id: string; content: string }>) => {
     localStorage.setItem('story-method-order', JSON.stringify(order))
+    setPhase('blank')
+  }
+
+  const handlePalaceFinalComplete = () => {
+    // 第五章の記憶の宮殿統合が完了したら、空白時間へ
     setPhase('blank')
   }
 
@@ -144,6 +151,14 @@ export default function TrainingPage() {
         <StoryMethod
           items={session.trainingData}
           onComplete={handleStoryMethodComplete}
+        />
+      )}
+
+      {phase === 'palace-final' && palace && (
+        <WalkThrough
+          items={session.trainingData}
+          places={palace.places}
+          onComplete={handlePalaceFinalComplete}
         />
       )}
 
