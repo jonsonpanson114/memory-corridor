@@ -14,7 +14,7 @@
 | 言語 | TypeScript |
 | スタイリング | Tailwind CSS |
 | アニメーション | Framer Motion |
-| AI | Gemini 3 Flash API（`gemini-3-flash`）|
+| AI | Gemini 2.5 Flash API（`gemini-2.5-flash`）|
 | DB | Vercel KV |
 | デプロイ | Vercel |
 | プラットフォーム | モバイルファースト PWA |
