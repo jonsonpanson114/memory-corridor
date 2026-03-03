@@ -1,7 +1,8 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
+import Link from 'next/link'
 import PalaceSetup from '@/components/training/PalaceSetup'
 import WalkThrough from '@/components/training/WalkThrough'
 import BlankTime from '@/components/training/BlankTime'
@@ -15,7 +16,7 @@ import { useRouter } from 'next/navigation'
 
 type TrainingPhase = 'setup' | 'walkthrough' | 'blank' | 'recall' | 'number-conversion' | 'link-method' | 'story-method' | 'palace-final'
 
-export default function TrainingPage() {
+function TrainingPageContent() {
   const searchParams = useSearchParams()
   const chapterId = searchParams.get('chapter') || 'chapter1'
   const sessionNumber = parseInt(searchParams.get('session') || '1')
@@ -172,4 +173,10 @@ export default function TrainingPage() {
   )
 }
 
-import Link from 'next/link'
+export default function TrainingPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><p className="text-text-primary">読み込み中...</p></div>}>
+      <TrainingPageContent />
+    </Suspense>
+  )
+}
