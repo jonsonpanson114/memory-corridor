@@ -13,45 +13,34 @@ export default function TextReveal({ text, onComplete, speed = 80 }: TextRevealP
   const [displayedText, setDisplayedText] = useState('')
   const [isComplete, setIsComplete] = useState(false)
   const intervalRef = useRef<NodeJS.Timeout | null>(null)
-  const hasStartedRef = useRef(false)
 
   useEffect(() => {
-    return () => {
-      if (hasStartedRef.current || isComplete) return
-      hasStartedRef.current = true
-
-      let index = 0
-      let charIndex = 0
-
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current)
+    // Reset if text changes
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current!)
       intervalRef.current = null
-      setIsComplete(false)
-      setDisplayedText('')
-      index = 0
-      charIndex = 0
-      hasStartedRef.current = false
-      return
+    }
+    setIsComplete(false)
+    setDisplayedText('')
+
+    let index = 0
+
+    const interval = setInterval(() => {
+      if (index >= text.length) {
+        setIsComplete(true)
+        clearInterval(intervalRef.current!)
+        intervalRef.current = null
+        onComplete?.()
+        return
       }
 
-      const interval = setInterval(() => {
-        if (index >= text.length) {
-          setIsComplete(true)
-          clearInterval(intervalRef.current!)
-          intervalRef.current = null
-          onComplete?.()
-          return
-        }
+      const charsToAdd = Math.min(3, text.length - index)
+      setDisplayedText(text.slice(0, index + charsToAdd))
+      index += charsToAdd
 
-        const charsToAdd = Math.min(3, text.length - index)
-        setDisplayedText(text.slice(0, index + charsToAdd))
-        index += charsToAdd
-        charIndex += charsToAdd
+    }, speed)
 
-      }, speed)
-
-      intervalRef.current = interval
-    }
+    intervalRef.current = interval
 
     return () => {
       if (intervalRef.current) {
@@ -68,7 +57,7 @@ export default function TextReveal({ text, onComplete, speed = 80 }: TextRevealP
       className="font-serif text-lg leading-relaxed tracking-wide text-text-primary"
     >
       {displayedText}
-      <span className="animate-pulse">|</span>
+      {!isComplete && <span className="animate-pulse">|</span>}
     </motion.p>
   )
 }

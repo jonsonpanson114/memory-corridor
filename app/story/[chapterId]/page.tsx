@@ -1,8 +1,9 @@
 'use client'
 
-import { use, useState, useEffect } from 'react'
+import { use, useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
+import { motion } from 'framer-motion'
 import { getSession } from '@/lib/story-data'
 import TextReveal from '@/components/story/TextReveal'
 import ChoiceButton from '@/components/story/ChoiceButton'
@@ -14,7 +15,7 @@ interface GeneratedStory {
   nextHint: string
 }
 
-export default function StoryPage({
+function StoryPageContent({
   params,
 }: {
   params: Promise<{ chapterId: string }>
@@ -32,7 +33,7 @@ export default function StoryPage({
   const [miraResponse, setMiraResponse] = useState<string | null>(null)
 
   // ユーザーの前回スコアを取得
-  const lastScore = JSON.parse(localStorage.getItem('last-score') || 'null')
+  const lastScore = typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('last-score') || 'null') : null
 
   // 選択肢を選んだときにGeminiからミラの反応を生成
   useEffect(() => {
@@ -191,4 +192,14 @@ export default function StoryPage({
   )
 }
 
-import { motion } from 'framer-motion'
+export default function StoryPage({
+  params,
+}: {
+  params: Promise<{ chapterId: string }>
+}) {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><p className="text-text-primary">読み込み中...</p></div>}>
+      <StoryPageContent params={params} />
+    </Suspense>
+  )
+}
