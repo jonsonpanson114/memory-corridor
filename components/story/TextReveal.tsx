@@ -9,7 +9,7 @@ interface TextRevealProps {
   speed?: number
 }
 
-export default function TextReveal({ text, onComplete, speed = 300 }: TextRevealProps) {
+export default function TextReveal({ text, onComplete, speed = 200 }: TextRevealProps) {
   const [displayedText, setDisplayedText] = useState('')
   const [isComplete, setIsComplete] = useState(false)
   const timeoutRef = useRef<NodeJS.Timeout | null>(null)
