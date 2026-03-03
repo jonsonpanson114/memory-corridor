@@ -119,7 +119,7 @@ function StoryPageContent({
         <div className="mb-8 min-h-[400px]">
           <TextReveal
             text={session.storyText}
-            speed={150}
+            speed={200}
             onComplete={() => setShowChoices(true)}
           />
         </div>
