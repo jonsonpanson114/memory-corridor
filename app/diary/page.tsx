@@ -14,7 +14,13 @@ interface MemoryFragment {
 
 export default function DiaryPage() {
   const [memories, setMemories] = useState<MemoryFragment[]>([])
-  const [progress, setProgress] = useState(getProgress())
+  const [progress, setProgress] = useState(() => {
+    // 初期値は空のオブジェクトを返し、useEffectでロード
+    if (typeof window !== 'undefined') {
+      return getProgress()
+    }
+    return { totalSessions: 0, totalCorrectAnswers: 0, currentChapter: 'chapter1', completedSessions: {} }
+  })
 
   useEffect(() => {
     setMemories(getMemories().memories)
