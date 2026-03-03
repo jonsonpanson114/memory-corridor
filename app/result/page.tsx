@@ -6,7 +6,7 @@ import Link from 'next/link'
 import ScoreCandles from '@/components/result/ScoreCandles'
 import NarrativeText from '@/components/result/NarrativeText'
 import { getSession } from '@/lib/story-data'
-import { updateScore, incrementSession, unlockMemory } from '@/lib/user-progress'
+import { updateScore, incrementSession, unlockMemory, saveProgress } from '@/lib/user-progress'
 import type { ScoreResult } from '@/types/training'
 
 export default function ResultPage() {

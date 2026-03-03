@@ -10,7 +10,7 @@ interface LinkMethodProps {
 
 export default function LinkMethod({ items, onComplete }: LinkMethodProps) {
   const [currentIndex, setCurrentIndex] = useState(0)
-  const [links, setLinks] = useState<Record<number, string[]>>({})
+  const [links, setLinks] = useState<Record<number, { from: number; to: number; description: string }[]>>({})
   const [showLinks, setShowLinks] = useState(false)
 
   const handleNext = () => {

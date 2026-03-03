@@ -62,14 +62,13 @@ export default function TrainingPage() {
     setPhase('recall')
   }
 
-  const handleNumberConversionComplete = (words: Record<number, string>) => {
-    setUserWords(words)
-    localStorage.setItem('number-conversion-words', JSON.stringify(words))
+  const handleNumberConversionComplete = () => {
+    // NumberConversionコンポーネント内でlocalStorageに保存されるので、ここでは空白時間へ進むだけ
     setPhase('blank')
   }
 
-  const handleLinkMethodComplete = (links: Record<number, any>) => {
-    localStorage.setItem('link-method-links', JSON.stringify(links))
+  const handleLinkMethodComplete = () => {
+    // LinkMethodコンポーネント内でlocalStorageに保存されるので、ここでは空白時間へ進むだけ
     setPhase('blank')
   }
 

@@ -27,6 +27,7 @@ export interface TrainingItem {
   id: string
   content: string
   location: string
+  type?: 'number' | 'story' | 'place' | 'word' | 'palace'
 }
 
 export interface UserAnswer {

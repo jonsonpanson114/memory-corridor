@@ -422,7 +422,7 @@ export const CHAPTERS: Record<string, Chapter> = {
 
 「ストーリー法で記憶を再構成すると——
 　事実と感情が、また繋がります。
-　物語の形にすることで、両方が生きてくる。`
+　物語の形にすることで、両方が生きてくる。
 
 「今日の課題は——断片を並べることです。」
 
@@ -478,11 +478,11 @@ export const CHAPTERS: Record<string, Chapter> = {
           { id: 'who_in_mirror', text: '鏡の中の人は、誰ですか' },
         ],
         trainingData: [
-          { id: 'item1', content: '台所の朝', type: 'palace' },
-          { id: 'item2', content: '「317」', type: 'palace' },
-          { id: 'item3', content: '金木犀の香り', type: 'palace' },
-          { id: 'item4', content: '「待っています」', type: 'palace' },
-          { id: 'item5', content: 'まどかの笑顔', type: 'palace' },
+          { id: 'item1', content: '台所の朝', type: 'place' },
+          { id: 'item2', content: '「317」', type: 'place' },
+          { id: 'item3', content: '金木犀の香り', type: 'place' },
+          { id: 'item4', content: '「待っています」', type: 'place' },
+          { id: 'item5', content: 'まどかの笑顔', type: 'place' },
         ],
       },
       {
@@ -501,12 +501,12 @@ export const CHAPTERS: Record<string, Chapter> = {
           { id: 'why_madoka_left', text: 'なぜまどかはそれを残したんでしょう' },
         ],
         trainingData: [
-          { id: 'item1', content: 'まどかと記憶術', type: 'palace' },
-          { id: 'item2', content: '病院の廊下', type: 'palace' },
-          { id: 'item3', content: '「また来てね」', type: 'palace' },
-          { id: 'item4', content: '別れの日', type: 'palace' },
-          { id: 'item5', content: 'ミラの存在', type: 'palace' },
-          { id: 'item6', content: '記憶の宮殿', type: 'palace' },
+          { id: 'item1', content: 'まどかと記憶術', type: 'place' },
+          { id: 'item2', content: '病院の廊下', type: 'place' },
+          { id: 'item3', content: '「また来てね」', type: 'place' },
+          { id: 'item4', content: '別れの日', type: 'place' },
+          { id: 'item5', content: 'ミラの存在', type: 'place' },
+          { id: 'item6', content: '記憶の宮殿', type: 'place' },
         ],
       },
     ],

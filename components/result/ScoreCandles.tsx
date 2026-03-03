@@ -27,18 +27,9 @@ export default function ScoreCandles({ correctCount, totalCount }: ScoreCandlesP
               initial={{ opacity: 0, scale: 0 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{
-                delay: index * 0.2 + 0.3,
+                delay: index * 0.2,
                 type: 'spring',
                 stiffness: 200,
-              }}
-              animate={{
-                opacity: [0.7, 1, 0.7],
-                scale: [1, 1.1, 1],
-              }}
-              transition={{
-                duration: 3,
-                repeat: Infinity,
-                ease: 'easeInOut',
               }}
               className="w-4 h-6 bg-gradient-to-t from-accent to-orange-400 rounded-full mx-auto relative"
             >
