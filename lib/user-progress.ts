@@ -9,6 +9,16 @@ const STORAGE_KEYS = {
 
 // ユーザー進捗管理
 export function getProgress(): UserProgress {
+  if (typeof window === 'undefined') {
+    return {
+      userId: 'local-user',
+      currentChapter: 'chapter1',
+      currentSession: 1,
+      totalCorrectAnswers: 0,
+      totalSessions: 0,
+      lastPlayedAt: new Date(),
+    }
+  }
   const stored = localStorage.getItem(STORAGE_KEYS.PROGRESS)
   if (!stored) {
     return {
@@ -24,6 +34,9 @@ export function getProgress(): UserProgress {
 }
 
 export function saveProgress(progress: Partial<UserProgress>) {
+  if (typeof window === 'undefined') {
+    return getProgress()
+  }
   const current = getProgress()
   const updated = { ...current, ...progress }
   localStorage.setItem(STORAGE_KEYS.PROGRESS, JSON.stringify(updated))
@@ -49,6 +62,12 @@ export function updateScore(correctCount: number, totalCount: number) {
 
 // 記憶の断片管理
 export function getMemories(): UserMemory {
+  if (typeof window === 'undefined') {
+    return {
+      userId: 'local-user',
+      memories: [],
+    }
+  }
   const stored = localStorage.getItem(STORAGE_KEYS.MEMORIES)
   if (!stored) {
     return {
@@ -60,6 +79,9 @@ export function getMemories(): UserMemory {
 }
 
 export function unlockMemory(chapterId: string, content: string) {
+  if (typeof window === 'undefined') {
+    return getMemories()
+  }
   const current = getMemories()
   const newMemory = {
     id: `${chapterId}-${Date.now()}`,
@@ -74,6 +96,9 @@ export function unlockMemory(chapterId: string, content: string) {
 
 // 物語分岐管理
 export function getBranches(): StoryBranch[] {
+  if (typeof window === 'undefined') {
+    return []
+  }
   const stored = localStorage.getItem(STORAGE_KEYS.BRANCHES)
   if (!stored) {
     return []
@@ -82,6 +107,9 @@ export function getBranches(): StoryBranch[] {
 }
 
 export function saveBranch(chapterId: string, userId: string, choices: string[], flags: Record<string, boolean>) {
+  if (typeof window === 'undefined') {
+    return []
+  }
   const current = getBranches()
   const newBranch = {
     chapterId,
@@ -96,6 +124,9 @@ export function saveBranch(chapterId: string, userId: string, choices: string[],
 
 // 記憶の宮殿管理
 export function getPalace() {
+  if (typeof window === 'undefined') {
+    return null
+  }
   const stored = localStorage.getItem(STORAGE_KEYS.PALACE)
   if (!stored) {
     return null
@@ -104,6 +135,9 @@ export function getPalace() {
 }
 
 export function savePalace(palace: { name: string; places: string[] }) {
+  if (typeof window === 'undefined') {
+    return palace
+  }
   localStorage.setItem(STORAGE_KEYS.PALACE, JSON.stringify(palace))
   return palace
 }
