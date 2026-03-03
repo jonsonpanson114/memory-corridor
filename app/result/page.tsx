@@ -13,6 +13,8 @@ export default function ResultPage() {
   const [score, setScore] = useState<ScoreResult | null>(null)
   const [loading, setLoading] = useState(true)
   const [nextHint, setNextHint] = useState<string>('')
+  const [currentChapter, setCurrentChapter] = useState<string>('chapter1')
+  const [currentSession, setCurrentSession] = useState<number>(1)
 
   useEffect(() => {
     async function fetchScore() {
@@ -21,6 +23,10 @@ export default function ResultPage() {
       const chapterId = localStorage.getItem('current-chapter') || 'chapter1'
       const sessionNumber = parseInt(localStorage.getItem('current-session') || '1')
       const storedNextHint = localStorage.getItem('next-hint') || ''
+
+      // Store for render-time access
+      setCurrentChapter(chapterId)
+      setCurrentSession(sessionNumber)
 
       if (!answersStr || !palaceStr) {
         setLoading(false)
@@ -226,7 +232,7 @@ export default function ResultPage() {
               解放された記憶の断片
             </p>
             <p className="font-serif text-text-primary text-sm relative z-10">
-              * {getMemoryContent(localStorage.getItem('current-chapter') || 'chapter1', parseInt(localStorage.getItem('current-session') || '1'), score.correctCount)}
+              * {getMemoryContent(currentChapter, currentSession, score.correctCount)}
             </p>
           </motion.div>
         )}
