@@ -9,20 +9,19 @@ interface TextRevealProps {
   speed?: number
 }
 
-export default function TextReveal({ text, onComplete, speed = 80 }: TextRevealProps) {
+export default function TextReveal({ text, onComplete, speed = 200 }: TextRevealProps) {
   const [displayedText, setDisplayedText] = useState('')
   const [isComplete, setIsComplete] = useState(false)
   const intervalRef = useRef<NodeJS.Timeout | null>(null)
+  const hasStartedRef = useRef(false)
 
   useEffect(() => {
-    // Reset if text changes
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current!)
-      intervalRef.current = null
+    // 最初のレンダリングでのみ実行
+    if (hasStartedRef.current) {
+      return
     }
-    setIsComplete(false)
-    setDisplayedText('')
 
+    hasStartedRef.current = true
     let index = 0
 
     const interval = setInterval(() => {
@@ -34,9 +33,9 @@ export default function TextReveal({ text, onComplete, speed = 80 }: TextRevealP
         return
       }
 
-      const charsToAdd = Math.min(3, text.length - index)
-      setDisplayedText(text.slice(0, index + charsToAdd))
-      index += charsToAdd
+      // 1回に1文字ずつ追加
+      setDisplayedText(prev => text.slice(0, index + 1))
+      index += 1
 
     }, speed)
 
@@ -48,7 +47,7 @@ export default function TextReveal({ text, onComplete, speed = 80 }: TextRevealP
         intervalRef.current = null
       }
     }
-  }, [text, speed, onComplete])
+  }, [text, speed])
 
   return (
     <motion.p
