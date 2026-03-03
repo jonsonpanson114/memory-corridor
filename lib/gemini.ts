@@ -14,7 +14,7 @@ export async function generateStory(prompt: string): Promise<string> {
   }
 
   try {
-    const model = genAI.getGenerativeModel({ model: 'gemini-3-flash-preview' })
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' })
 
     const result = await model.generateContent(prompt)
     const response = await result.response
@@ -56,7 +56,7 @@ export async function scoreAnswers(params: {
   }
 
   try {
-    const model = genAI.getGenerativeModel({ model: 'gemini-3-flash-preview' })
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' })
 
     const itemMap = new Map(params.items.map((i) => [i.id, i.content]))
 
