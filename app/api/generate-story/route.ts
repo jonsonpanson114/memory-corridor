@@ -43,10 +43,10 @@ export async function POST(request: NextRequest) {
     const parsed = JSON.parse(jsonText)
 
     return NextResponse.json(parsed)
-  } catch (error) {
+  } catch (error: any) {
     console.error('Generate Story API error:', error)
     return NextResponse.json(
-      { error: 'Failed to generate story' },
+      { error: 'Failed to generate story', details: error?.message || String(error) },
       { status: 500 }
     )
   }

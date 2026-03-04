@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState } from 'react'
 
 interface TextRevealProps {
   text: string
@@ -9,13 +9,14 @@ interface TextRevealProps {
   speed?: number
 }
 
-export default function TextReveal({ text, onComplete, speed = 100 }: TextRevealProps) {
+export default function TextReveal({ text, onComplete, speed = 40 }: TextRevealProps) {
   const [displayedText, setDisplayedText] = useState('')
   const [isComplete, setIsComplete] = useState(false)
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
-  const hasStartedRef = useRef(false)
+  const [skipped, setSkipped] = useState(false)
 
   useEffect(() => {
+    if (skipped) return
+
     let index = 0
     let timeout: NodeJS.Timeout | null = null
     let isCancelled = false
@@ -39,7 +40,6 @@ export default function TextReveal({ text, onComplete, speed = 100 }: TextReveal
       timeout = setTimeout(displayNextChar, nextDelay)
     }
 
-    // 文字列が変わった場合はリセットする
     setDisplayedText('')
     setIsComplete(false)
     timeout = setTimeout(displayNextChar, speed)
@@ -50,16 +50,27 @@ export default function TextReveal({ text, onComplete, speed = 100 }: TextReveal
         clearTimeout(timeout)
       }
     }
-  }, [text, speed])
+  }, [text, speed, skipped, onComplete])
+
+  const handleSkip = () => {
+    if (!isComplete && !skipped) {
+      setSkipped(true)
+      setDisplayedText(text)
+      setIsComplete(true)
+      onComplete?.()
+    }
+  }
 
   return (
-    <motion.p
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      className="font-serif text-lg leading-relaxed tracking-wide text-text-primary"
-    >
-      {displayedText}
-      {!isComplete && <span className="animate-pulse">|</span>}
-    </motion.p>
+    <div onClick={handleSkip} className={`cursor-pointer ${!isComplete ? 'hover:opacity-80' : ''}`}>
+      <motion.p
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="font-serif text-lg leading-relaxed tracking-wide text-text-primary whitespace-pre-wrap"
+      >
+        {displayedText}
+        {!isComplete && <span className="animate-pulse">|</span>}
+      </motion.p>
+    </div>
   )
 }

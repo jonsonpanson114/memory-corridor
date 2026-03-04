@@ -16,10 +16,10 @@ export async function POST(request: NextRequest) {
     const result = await scoreAnswers({ items, answers, palace })
 
     return NextResponse.json(result)
-  } catch (error) {
+  } catch (error: any) {
     console.error('Score API error:', error)
     return NextResponse.json(
-      { error: 'Failed to score answers' },
+      { error: 'Failed to score answers', details: error?.message || String(error) },
       { status: 500 }
     )
   }
