@@ -32,16 +32,15 @@ function StoryPageContent({
   const [loadingResponse, setLoadingResponse] = useState(false)
   const [miraResponse, setMiraResponse] = useState<string | null>(null)
 
-  // ユーザーの前回スコアを取得
-  const lastScore = typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('last-score') || 'null') : null
-
   // 選択肢を選んだときにGeminiからミラの反応を生成
   useEffect(() => {
     async function fetchMiraResponse() {
-      if (!selectedChoice || loadingResponse) return
+      if (!selectedChoice) return
 
       setLoadingResponse(true)
       try {
+        const currentLastScore = JSON.parse(localStorage.getItem('last-score') || 'null')
+
         const response = await fetch('/api/generate-story', {
           method: 'POST',
           headers: {
@@ -50,7 +49,7 @@ function StoryPageContent({
           body: JSON.stringify({
             chapterId,
             sessionNumber,
-            lastScore,
+            lastScore: currentLastScore,
             userChoice: selectedChoice,
             memoryFragment: null,
           }),
@@ -71,8 +70,10 @@ function StoryPageContent({
       }
     }
 
-    fetchMiraResponse()
-  }, [selectedChoice, chapterId, sessionNumber, lastScore, loadingResponse])
+    if (!miraResponse && selectedChoice) {
+      fetchMiraResponse()
+    }
+  }, [selectedChoice, chapterId, sessionNumber, miraResponse])
 
   // 選択肢をクリックしたとき
   const handleChoiceSelect = (choiceId: string) => {
