@@ -31,6 +31,15 @@ export async function POST(request: NextRequest) {
   "nextHint": "次回予告（1文）"
 }`
 
+    // Diagnostic logging (masked)
+    const apiKey = process.env.GEMINI_API_KEY
+    console.log('API Key diagnostic:', {
+      exists: !!apiKey,
+      length: apiKey?.length,
+      start: apiKey?.substring(0, 4),
+      end: apiKey?.substring((apiKey?.length || 0) - 4)
+    })
+
     const result = await generateGeminiStory(prompt)
 
     // JSONを抽出
