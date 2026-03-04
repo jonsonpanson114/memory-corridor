@@ -1,10 +1,37 @@
 'use client'
 
 import { motion } from 'framer-motion'
+import { useEffect, useRef, useState } from 'react'
 
 export default function CandleAmbient() {
+  const [isPlaying, setIsPlaying] = useState(false)
+  const audioRef = useRef<HTMLAudioElement | null>(null)
+
+  const toggleSound = () => {
+    if (!audioRef.current) return
+
+    if (isPlaying) {
+      audioRef.current.pause()
+    } else {
+      audioRef.current.play().catch(err => console.log('Audio playback failed:', err))
+    }
+    setIsPlaying(!isPlaying)
+  }
+
   return (
-    <div className="fixed top-4 right-4 z-50">
+    <div className="fixed top-4 right-4 z-50 flex flex-col items-center gap-2">
+      <audio
+        ref={audioRef}
+        loop
+        src="/audio/candle-crackle.mp3" // ユーザーが配置する必要がある
+      />
+      <button
+        onClick={toggleSound}
+        className="text-xs text-text-secondary hover:text-accent transition-colors"
+      >
+        {isPlaying ? 'SOUND ON' : 'SOUND OFF'}
+      </button>
+
       <motion.div
         animate={{
           opacity: [0.3, 0.7, 0.3],

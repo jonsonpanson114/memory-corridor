@@ -40,7 +40,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="ja">
+    <html lang="ja" className="dark" style={{ colorScheme: 'dark' }}>
       <head>
         <link rel="icon" href="/favicon.ico" />
       </head>
