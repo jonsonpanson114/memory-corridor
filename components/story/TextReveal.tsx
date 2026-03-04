@@ -52,7 +52,7 @@ export default function TextReveal({ text, onComplete, speed = 100 }: TextReveal
         timeoutRef.current = null
       }
     }
-  }, [text, speed])
+  }, [speed])
 
   return (
     <motion.p
