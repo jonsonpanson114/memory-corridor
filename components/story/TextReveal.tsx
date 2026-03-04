@@ -16,43 +16,41 @@ export default function TextReveal({ text, onComplete, speed = 100 }: TextReveal
   const hasStartedRef = useRef(false)
 
   useEffect(() => {
-    // 最初のレンダリングでのみ実行
-    if (hasStartedRef.current) {
-      return
-    }
-
-    hasStartedRef.current = true
     let index = 0
+    let timeout: NodeJS.Timeout | null = null
+    let isCancelled = false
 
     const displayNextChar = () => {
+      if (isCancelled) return
+
       if (index >= text.length) {
         setIsComplete(true)
-        timeoutRef.current = null
         onComplete?.()
         return
       }
 
-      // 1回に1文字ずつ追加
-      setDisplayedText(prev => text.slice(0, index + 1))
+      setDisplayedText(text.slice(0, index + 1))
 
-      // 次の文字を表示するまでの待ち時間を計算
       const nextChar = text[index]
       const isPunctuation = nextChar === '。' || nextChar === '、'
-      const nextDelay = isPunctuation ? speed * 3 : speed  // 句読点は3倍待つ
+      const nextDelay = isPunctuation ? speed * 3 : speed
 
       index += 1
-      timeoutRef.current = setTimeout(displayNextChar, nextDelay)
+      timeout = setTimeout(displayNextChar, nextDelay)
     }
 
-    timeoutRef.current = setTimeout(displayNextChar, speed)
+    // 文字列が変わった場合はリセットする
+    setDisplayedText('')
+    setIsComplete(false)
+    timeout = setTimeout(displayNextChar, speed)
 
     return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current)
-        timeoutRef.current = null
+      isCancelled = true
+      if (timeout) {
+        clearTimeout(timeout)
       }
     }
-  }, [speed])
+  }, [text, speed])
 
   return (
     <motion.p

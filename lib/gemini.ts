@@ -10,7 +10,11 @@ const genAI = API_KEY ? new GoogleGenerativeAI(API_KEY) : null
 
 export async function generateStory(prompt: string): Promise<string> {
   if (!genAI) {
-    return '[AI機能が無効されています]'
+    return JSON.stringify({
+      storyText: "……。",
+      miraResponse: "……。",
+      nextHint: "（AI機能が無効なため、予告は作れません）"
+    })
   }
 
   try {
@@ -67,9 +71,9 @@ ${params.items.map((i, idx) => `${idx + 1}. ${i.content}`).join('\n')}
 
 【ユーザーの回答】
 ${params.answers.map((a, idx) => {
-  const correctItem = itemMap.get(a.itemId)
-  return `${idx + 1}. ${a.answer}`
-}).join('\n')}
+      const correctItem = itemMap.get(a.itemId)
+      return `${idx + 1}. ${a.answer}`
+    }).join('\n')}
 
 【記憶の宮殿】
 場所名：${params.palace.name}
