@@ -24,8 +24,12 @@ export async function generateStory(prompt: string): Promise<string> {
     const response = await result.response
     return response.text()
   } catch (error) {
-    console.error('Gemini API error:', error)
-    throw error
+    console.error('Gemini API error, using fallback:', error)
+    return JSON.stringify({
+      storyText: "……。",
+      miraResponse: "……。",
+      nextHint: "（AI機能が無効なため、予告は作れません）"
+    })
   }
 }
 
