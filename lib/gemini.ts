@@ -23,11 +23,11 @@ export async function generateStory(prompt: string): Promise<string> {
     const result = await model.generateContent(prompt)
     const response = await result.response
     return response.text()
-  } catch (error) {
+  } catch (error: any) {
     console.error('Gemini API error, using fallback:', error)
     return JSON.stringify({
       storyText: "……。",
-      miraResponse: "……あなたの声は、今の私には遠く霞んで聞こえます。先へ進んでください。",
+      miraResponse: `……あなたの声は、今の私には遠く霞んで聞こえます。（Error: ${error?.message || 'Unknown error'}）`,
       nextHint: "（通信が途切れているようです。記憶術へ直行します）"
     })
   }
