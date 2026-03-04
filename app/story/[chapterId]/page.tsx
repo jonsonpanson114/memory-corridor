@@ -1,6 +1,6 @@
 'use client'
 
-import { use, useState, useEffect, Suspense } from 'react'
+import { use, useState, useEffect, Suspense, useCallback } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
@@ -31,6 +31,10 @@ function StoryPageContent({
   const [generatedStory, setGeneratedStory] = useState<GeneratedStory | null>(null)
   const [loadingResponse, setLoadingResponse] = useState(false)
   const [miraResponse, setMiraResponse] = useState<string | null>(null)
+
+  const handleRevealComplete = useCallback(() => {
+    setShowChoices(true)
+  }, [])
 
   // 選択肢を選んだときにGeminiからミラの反応を生成
   useEffect(() => {
@@ -121,7 +125,7 @@ function StoryPageContent({
           <TextReveal
             text={session.storyText}
             speed={30}
-            onComplete={() => setShowChoices(true)}
+            onComplete={handleRevealComplete}
           />
         </div>
 
@@ -142,8 +146,8 @@ function StoryPageContent({
         {/* ミラの反応 */}
         {selectedChoice && miraResponse && (
           <div className="mt-8 p-6 bg-accent/10 border border-accent/30 rounded">
-            <p className="font-serif text-text-primary leading-relaxed">
-              **ミラ：**
+            <p className="font-serif text-accent leading-relaxed font-bold">
+              ミラ：
             </p>
             <p className="font-serif text-text-primary leading-relaxed mt-2">
               {miraResponse}

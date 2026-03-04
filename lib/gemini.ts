@@ -27,8 +27,8 @@ export async function generateStory(prompt: string): Promise<string> {
     console.error('Gemini API error, using fallback:', error)
     return JSON.stringify({
       storyText: "……。",
-      miraResponse: "……。",
-      nextHint: "（AI機能が無効なため、予告は作れません）"
+      miraResponse: "……あなたの声は、今の私には遠く霞んで聞こえます。先へ進んでください。",
+      nextHint: "（通信が途切れているようです。記憶術へ直行します）"
     })
   }
 }
