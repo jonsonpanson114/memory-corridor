@@ -25,9 +25,10 @@ export async function generateStory(prompt: string): Promise<string> {
     return response.text()
   } catch (error: any) {
     console.error('Gemini API error, using fallback:', error)
+    const keyHint = API_KEY ? `${API_KEY.length}幸 [${API_KEY.substring(0, 3)}...${API_KEY.substring(API_KEY.length - 3)}]` : '未設定'
     return JSON.stringify({
       storyText: "……。",
-      miraResponse: `……あなたの声は、今の私には遠く霞んで聞こえます。（Error: ${error?.message || 'Unknown error'}）`,
+      miraResponse: `……あなたの声は、今の私には遠く霞んで聞こえます。（Key: ${keyHint}, Model: gemini-3.0-flash, Error: ${error?.message || 'Unknown'})`,
       nextHint: "（通信が途切れているようです。記憶術へ直行します）"
     })
   }
