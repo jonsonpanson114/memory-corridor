@@ -65,7 +65,7 @@ export async function scoreAnswers(params: {
   }
 
   try {
-    const model = genAI.getGenerativeModel({ model: 'gemini-3.0-flash' })
+    const model = genAI.getGenerativeModel({ model: 'gemini-3-flash' })
 
     const itemMap = new Map(params.items.map((i) => [i.id, i.content]))
 
