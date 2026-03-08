@@ -27,10 +27,16 @@ export const metadata: Metadata = {
   title: '記憶の回廊',
   description: 'ビジュアルノベル × 記憶術トレーニング',
   manifest: '/manifest.json',
+  themeColor: '#0c0905',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',
     title: '記憶の回廊',
+  },
+  icons: {
+    apple: [
+      { url: '/icon-192.png', sizes: '192x192', type: 'image/png' },
+    ],
   },
 }
 
