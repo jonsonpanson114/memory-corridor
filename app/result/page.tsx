@@ -71,8 +71,7 @@ export default function ResultPage() {
           }
 
           // セッションの進行を確定
-          const session = getSession(chapterId, sessionNumber)
-          const chapter = getSession(chapterId, 1)?.chapterId ? { sessions: getChapter(chapterId)?.sessions || [] } : null
+          const chapter = getChapter(chapterId)
           const isLastSession = sessionNumber >= (chapter?.sessions?.length || 0)
 
           if (isLastSession) {
