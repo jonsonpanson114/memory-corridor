@@ -84,7 +84,10 @@ export default function ResultPage() {
               const nextChapterId = chapterIds[currentIndex + 1]
               updatedProgress = incrementSession(nextChapterId, 1)
             } else {
-              updatedProgress = incrementSession(current.currentChapter, current.currentSession + 1) // 最終章の場合はセッション番号のみ増加
+              // 最終章の場合
+              const nextChapter = getChapter(chapterIds[currentIndex])
+              const nextSessionNumber = (nextChapter?.sessions?.length || 0) + 1
+              updatedProgress = incrementSession(chapterId, nextSessionNumber)
             }
           } else {
             // 同一章内の次のセッションへ
