@@ -71,22 +71,30 @@ export default function ResultPage() {
           }
 
           // セッションの進行を確定
+          const current = getProgress()
           const chapter = getChapter(chapterId)
           const isLastSession = sessionNumber >= (chapter?.sessions?.length || 0)
 
+          let updatedProgress: ReturnType<typeof incrementSession>
           if (isLastSession) {
             // 次の章への遷移
             const chapterIds = ['chapter1', 'chapter2', 'chapter3', 'chapter4', 'chapter5']
             const currentIndex = chapterIds.indexOf(chapterId)
             if (currentIndex !== -1 && currentIndex < chapterIds.length - 1) {
               const nextChapterId = chapterIds[currentIndex + 1]
-              incrementSession(nextChapterId, 1)
+              updatedProgress = incrementSession(nextChapterId, 1)
             } else {
-              incrementSession() // 最終章の場合はセッション番号のみ増加
+              updatedProgress = incrementSession(current.currentChapter, current.currentSession + 1) // 最終章の場合はセッション番号のみ増加
             }
           } else {
             // 同一章内の次のセッションへ
-            incrementSession(chapterId, sessionNumber + 1)
+            updatedProgress = incrementSession(current.currentChapter, sessionNumber + 1)
+          }
+
+          // Stateを更新
+          if (updatedProgress) {
+            setCurrentChapter(updatedProgress.currentChapter)
+            setCurrentSession(updatedProgress.currentSession)
           }
 
           // スコアを保存
