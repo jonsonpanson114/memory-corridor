@@ -5,8 +5,8 @@ import { motion } from 'framer-motion'
 import Link from 'next/link'
 import ScoreCandles from '@/components/result/ScoreCandles'
 import NarrativeText from '@/components/result/NarrativeText'
-import { getSession } from '@/lib/story-data'
-import { updateScore, incrementSession, unlockMemory, saveProgress } from '@/lib/user-progress'
+import { getSession, getChapter } from '@/lib/story-data'
+import { updateScore, incrementSession, unlockMemory, saveProgress, getProgress } from '@/lib/user-progress'
 import type { ScoreResult } from '@/types/training'
 
 export default function ResultPage() {
@@ -70,22 +70,24 @@ export default function ResultPage() {
             unlockMemory(chapterId, memoryContent)
           }
 
-          // 章の進行を管理
-          if (chapterId === 'chapter1' && sessionNumber === 2 && result.correctCount >= 3) {
-            // 第一章セッション2完了で第二章へ
-            saveProgress({ currentChapter: 'chapter2', currentSession: 1 })
-          }
-          if (chapterId === 'chapter2' && sessionNumber === 2 && result.correctCount >= 3) {
-            // 第二章セッション2完了で第三章へ
-            saveProgress({ currentChapter: 'chapter3', currentSession: 1 })
-          }
-          if (chapterId === 'chapter3' && sessionNumber === 2 && result.correctCount >= 3) {
-            // 第三章セッション2完了で第四章へ
-            saveProgress({ currentChapter: 'chapter4', currentSession: 1 })
-          }
-          if (chapterId === 'chapter4' && sessionNumber === 2 && result.correctCount >= 3) {
-            // 第四章セッション2完了で第五章へ
-            saveProgress({ currentChapter: 'chapter5', currentSession: 1 })
+          // セッションの進行を確定
+          const session = getSession(chapterId, sessionNumber)
+          const chapter = getSession(chapterId, 1)?.chapterId ? { sessions: getChapter(chapterId)?.sessions || [] } : null
+          const isLastSession = sessionNumber >= (chapter?.sessions?.length || 0)
+
+          if (isLastSession) {
+            // 次の章への遷移
+            const chapterIds = ['chapter1', 'chapter2', 'chapter3', 'chapter4', 'chapter5']
+            const currentIndex = chapterIds.indexOf(chapterId)
+            if (currentIndex !== -1 && currentIndex < chapterIds.length - 1) {
+              const nextChapterId = chapterIds[currentIndex + 1]
+              incrementSession(nextChapterId, 1)
+            } else {
+              incrementSession() // 最終章の場合はセッション番号のみ増加
+            }
+          } else {
+            // 同一章内の次のセッションへ
+            incrementSession(chapterId, sessionNumber + 1)
           }
 
           // スコアを保存
@@ -277,11 +279,22 @@ export default function ResultPage() {
           transition={{ delay: 3 }}
           className="mt-12 space-y-4"
         >
+          <motion.div
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <Link
+              href={`/story/${getProgress().currentChapter}?session=${getProgress().currentSession}`}
+              className="btn-primary block font-serif text-xl py-4 shadow-lg shadow-accent/20"
+            >
+              物語の続きへ
+            </Link>
+          </motion.div>
           <Link
             href="/"
-            className="btn-primary block font-serif text-lg"
+            className="block font-sans text-text-secondary text-sm hover:text-accent transition-colors py-2 border border-text-secondary/20 rounded"
           >
-            館を出る
+            一度館を出る
           </Link>
           <Link
             href="/diary"

@@ -86,14 +86,14 @@ export default function Home() {
           whileTap={{ scale: 0.95 }}
         >
           <Link
-            href={`/story/${progress.currentChapter}`}
+            href={`/story/${progress.currentChapter}?session=${progress.currentSession}`}
             className="btn-primary inline-block font-serif text-lg"
           >
-            {progress.currentChapter === 'chapter1' && '館の扉を開く'}
-            {progress.currentChapter === 'chapter2' && '時計塔へ向かう'}
-            {progress.currentChapter === 'chapter3' && '図書館へ向かう'}
-            {progress.currentChapter === 'chapter4' && '庭園へ向かう'}
-            {progress.currentChapter === 'chapter5' && '鏡の回廊へ向かう'}
+            {progress.currentChapter === 'chapter1' && (progress.currentSession === 1 ? '館の扉を開く' : '物語の続きへ')}
+            {progress.currentChapter === 'chapter2' && '時計塔の続きへ'}
+            {progress.currentChapter === 'chapter3' && '図書館の続きへ'}
+            {progress.currentChapter === 'chapter4' && '庭園の続きへ'}
+            {progress.currentChapter === 'chapter5' && '鏡の回廊の続きへ'}
           </Link>
         </motion.div>
 

@@ -21,7 +21,7 @@ export function getProgress(): UserProgress {
   }
   const stored = localStorage.getItem(STORAGE_KEYS.PROGRESS)
   if (!stored) {
-    return {
+    const defaultProgress = {
       userId: 'local-user',
       currentChapter: 'chapter1',
       currentSession: 1,
@@ -29,6 +29,8 @@ export function getProgress(): UserProgress {
       totalSessions: 0,
       lastPlayedAt: new Date(),
     }
+    localStorage.setItem(STORAGE_KEYS.PROGRESS, JSON.stringify(defaultProgress))
+    return defaultProgress
   }
   return JSON.parse(stored)
 }
@@ -43,10 +45,11 @@ export function saveProgress(progress: Partial<UserProgress>) {
   return updated
 }
 
-export function incrementSession() {
+export function incrementSession(nextChapterId?: string, nextSessionNumber?: number) {
   const current = getProgress()
   return saveProgress({
-    currentSession: current.currentSession + 1,
+    currentChapter: nextChapterId || current.currentChapter,
+    currentSession: nextSessionNumber || (current.currentSession + 1),
     totalSessions: current.totalSessions + 1,
     lastPlayedAt: new Date(),
   })
@@ -55,7 +58,7 @@ export function incrementSession() {
 export function updateScore(correctCount: number, totalCount: number) {
   const current = getProgress()
   return saveProgress({
-    totalCorrectAnswers: current.totalCorrectAnswers + correctCount,
+    totalCorrectAnswers: (current.totalCorrectAnswers || 0) + correctCount,
     lastPlayedAt: new Date(),
   })
 }
