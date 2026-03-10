@@ -42,6 +42,15 @@ export function saveProgress(progress: Partial<UserProgress>) {
   const current = getProgress()
   const updated = { ...current, ...progress }
   localStorage.setItem(STORAGE_KEYS.PROGRESS, JSON.stringify(updated))
+
+  // 個別キーも同期（後方互換性と整合性のため）
+  if (updated.currentChapter) {
+    localStorage.setItem('current-chapter', updated.currentChapter)
+  }
+  if (updated.currentSession) {
+    localStorage.setItem('current-session', updated.currentSession.toString())
+  }
+
   return updated
 }
 

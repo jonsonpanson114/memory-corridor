@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { getSession } from '@/lib/story-data'
+import { saveProgress } from '@/lib/user-progress'
 import TextReveal from '@/components/story/TextReveal'
 import ChoiceButton from '@/components/story/ChoiceButton'
 import CandleAmbient from '@/components/story/CandleAmbient'
@@ -88,8 +89,10 @@ function StoryPageContent({
 
   // トレーニングへ進むとき
   const handleProceedToTraining = () => {
-    localStorage.setItem('current-chapter', chapterId)
-    localStorage.setItem('current-session', sessionNumber.toString())
+    saveProgress({
+      currentChapter: chapterId,
+      currentSession: sessionNumber,
+    })
     router.push('/training')
   }
 

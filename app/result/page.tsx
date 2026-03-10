@@ -294,7 +294,7 @@ export default function ResultPage() {
             whileTap={{ scale: 0.95 }}
           >
             <Link
-              href={`/story/${getProgress().currentChapter}?session=${getProgress().currentSession}`}
+              href={`/story/${currentChapter}?session=${currentSession}`}
               className="btn-primary block font-serif text-xl py-4 shadow-lg shadow-accent/20"
             >
               物語の続きへ
