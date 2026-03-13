@@ -82,7 +82,7 @@ export const CHAPTERS: Record<string, Chapter> = {
 
 「これを読むといい。場所と記憶の話が書いてある。」
 
-『古代ギリシャの弁論家シモニデスは、宴会の途中で席を外した。
+『古代ギリシャের弁論家シモニデスは、宴会の途中で席を外した。
   その直後、建物が崩れ落ちた。
   遺体は判別がつかないほどに潰れていたが——
   シモニデスは、誰がどこに座っていたかを正確に思い出すことができた。
@@ -103,6 +103,92 @@ export const CHAPTERS: Record<string, Chapter> = {
           { id: 'item5', content: 'ガラスの小瓶', type: 'place' },
           { id: 'item6', content: '壊れた時計', type: 'place' },
           { id: 'item7', content: '古い写真', type: 'place' },
+        ],
+      },
+      {
+        id: 'chapter1-session3',
+        chapterId: 'chapter1',
+        sessionNumber: 3,
+        storyText: `三日目の夢は、少し違った。
+
+館が、前より広かった。
+いや——広くなったのではなく、見えていなかっただけかもしれない。
+
+廊下の奥に、新しい扉があった。
+昨日まで気づかなかった。あるいは、なかったのか。
+
+ミラは扉のそばに立っていた。
+「記憶が戻ると、見えるものが増えます。館は——あなたの記憶そのものですから。」
+
+扉の向こうから、かすかに声がした。
+誰かの声。知っているような気がする声。
+でも、言葉になっていなかった。`,
+        choices: [
+          { id: 'who_voice', text: 'あの声は誰ですか' },
+          { id: 'disappeared', text: 'もっとよく聞こうとしたら、消えた' },
+        ],
+        trainingData: [
+          { id: 'item1', content: '銀の鈴', type: 'place' },
+          { id: 'item2', content: '赤いリボン', type: 'place' },
+          { id: 'item3', content: '枯れたバラ', type: 'place' },
+          { id: 'item4', content: '真鍮の天秤', type: 'place' },
+          { id: 'item5', content: '羊皮紙の巻物', type: 'place' },
+          { id: 'item6', content: '青いインク瓶', type: 'place' },
+          { id: 'item7', content: '羽根ペン', type: 'place' },
+        ],
+      },
+      {
+        id: 'chapter1-session4',
+        chapterId: 'chapter1',
+        sessionNumber: 4,
+        storyText: `四日目。
+
+起きると、昨日の声がまだ耳に残っていた。
+館の中に、新しい部屋があった。
+扉は半開きになっていて、中から光が漏れていた。
+
+ミラが僕に問いかけた。
+「あなたは——本当に、思い出したいんですか。
+思い出すということは、忘れたかったことも、戻ってくるということです。それでも、ですか。」`,
+        choices: [
+          { id: 'want_to_remember', text: '思い出したい。だから来ている。' },
+          { id: 'not_sure', text: 'わからない。迷っている。' },
+        ],
+        trainingData: [
+          { id: 'item1', content: '台所の窓', type: 'place' },
+          { id: 'item2', content: '朝の光', type: 'place' },
+          { id: 'item3', content: '湯気の立つカップ', type: 'place' },
+          { id: 'item4', content: '誰かの背中', type: 'place' },
+          { id: 'item5', content: '白いカーテン', type: 'place' },
+          { id: 'item6', content: '木製の椅子', type: 'place' },
+        ],
+      },
+      {
+        id: 'chapter1-session5',
+        chapterId: 'chapter1',
+        sessionNumber: 5,
+        storyText: `五日目。
+
+第一章が、終わろうとしている。
+ミラは廊下の突き当たりの扉を指した。
+扉の向こうには、僕が最も強く覚えている場所があるという。
+
+「行ってきてください。私はここで待っています。」
+
+記憶が、この扉を開ける鍵になる。
+僕は自分の宮殿を信じて、一歩踏み出した。`,
+        choices: [
+          { id: 'trust_palace', text: '自分の記憶を信じる' },
+          { id: 'ask_mira', text: 'ミラは、誰なんですか' },
+        ],
+        trainingData: [
+          { id: 'item1', content: '思い出の鍵', type: 'place' },
+          { id: 'item2', content: '開かれた扉', type: 'place' },
+          { id: 'item3', content: '温かな光', type: 'place' },
+          { id: 'item4', content: '自分の名前', type: 'place' },
+          { id: 'item5', content: 'ミラの微笑み', type: 'place' },
+          { id: 'item6', content: '館の地図', type: 'place' },
+          { id: 'item7', content: '明日の約束', type: 'place' },
         ],
       },
     ],
@@ -246,6 +332,88 @@ export const CHAPTERS: Record<string, Chapter> = {
           { id: 'item4', content: '818', type: 'number' },
           { id: 'item5', content: '396', type: 'number' },
           { id: 'item6', content: '742', type: 'number' },
+        ],
+      },
+      {
+        id: 'chapter2-session3',
+        chapterId: 'chapter2',
+        sessionNumber: 3,
+        storyText: `八日目。
+
+時計塔の音が、また少し変わった。
+規則正しいリズムの中に——一拍だけ、ズレがある。
+
+ミラは今日、時計塔の中にいた。止まった針を、じっと見ていた。
+「……昨日、『まどか』という言葉が出てきましたね。
+その言葉を聞いたとき、何か感じましたか。」
+
+そういう感覚が、記憶が戻るときの兆しだという。
+言葉にできかなくていい。感じただけで十分だと、ミラは静かに言った。`,
+        choices: [
+          { id: 'you_know', text: 'あなたはその名前を知っていますか' },
+          { id: 'why_bother', text: 'なぜその数字がそんなに気になるんですか' },
+        ],
+        trainingData: [
+          { id: 'item1', content: '109', type: 'number' },
+          { id: 'item2', content: '482', type: 'number' },
+          { id: 'item3', content: '765', type: 'number' },
+          { id: 'item4', content: '358', type: 'number' },
+          { id: 'item5', content: '241', type: 'number' },
+        ],
+      },
+      {
+        id: 'chapter2-session4',
+        chapterId: 'chapter2',
+        sessionNumber: 4,
+        storyText: `九日目の夢は、秋の匂いから始まった。
+
+金木犀——だと思う。
+館の中に、匂いがあるのは初めてだった。
+
+ミラは中庭の、枯れかけた金木犀の木の前に立っていた。
+「この木が咲くのは——秋です。
+あなたの記憶の中で、この匂いと一緒に刻まれている日があります。」
+
+317——三月十七日ではなく。
+秋の、ある日。`,
+        choices: [
+          { id: 'what_happened', text: 'その日に、何があったんですか' },
+          { id: 'i_know_this', text: 'その木、知っている気がします' },
+        ],
+        trainingData: [
+          { id: 'item1', content: '1017', type: 'number' },
+          { id: 'item2', content: '1103', type: 'number' },
+          { id: 'item3', content: '0922', type: 'number' },
+          { id: 'item4', content: '1225', type: 'number' },
+        ],
+      },
+      {
+        id: 'chapter2-session5',
+        chapterId: 'chapter2',
+        sessionNumber: 5,
+        storyText: `十日目。
+
+金木犀の匂いが、昨日より濃かった。
+時計塔の針が、かすかに動いている気がした。
+
+「今日で、第二章が終わります。」
+
+ミラは僕の目を見て言った。
+感情は、一番強い記憶の錨。
+理屈で覚えた記憶は薄れるが、感情と一緒に刻まれた記憶は何年経っても消えない。
+
+あの日付を——感情と一緒に、覚えてください。
+それが、扉を開ける最後の鍵です。`,
+        choices: [
+          { id: 'remember_with_emotion', text: '感情と一緒に、刻み込む' },
+          { id: 'trust_yourself', text: '自分を信じて進む' },
+        ],
+        trainingData: [
+          { id: 'item1', content: '317', type: 'number' },
+          { id: 'item2', content: '思い出の秋', type: 'place' },
+          { id: 'item3', content: '金木犀の香り', type: 'place' },
+          { id: 'item4', content: 'あの人の声', type: 'place' },
+          { id: 'item5', content: '時計塔の響き', type: 'place' },
         ],
       },
     ],

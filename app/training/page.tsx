@@ -28,26 +28,41 @@ function TrainingPageContent() {
   const [userWords, setUserWords] = useState<Record<number, string>>({})
   const router = useRouter()
 
-  // 既存の記憶の宮殿をロード
+  // 記憶の宮殿と適切なトレーニングフェーズをロード
   useEffect(() => {
     const existingPalace = getPalace()
     if (existingPalace) {
       setPalace(existingPalace)
-
-      // 第二章の場合は数字変換法、第三章の場合は連想法、第四章の場合はストーリー法、第五章の場合は宮殿統合から開始
-      if (chapterId === 'chapter2') {
-        setPhase('number-conversion')
-      } else if (chapterId === 'chapter3') {
-        setPhase('link-method')
-      } else if (chapterId === 'chapter4') {
-        setPhase('story-method')
-      } else if (chapterId === 'chapter5') {
-        setPhase('walkthrough') // 第五章は記憶の宮殿の統合、walkthroughから開始
-      } else {
-        setPhase('walkthrough')
-      }
     }
-  }, [chapterId])
+
+    // トレーニングデータの種類に基づいてフェーズを決定
+    const targetSession = getSession(chapterId, sessionNumber)
+    if (!targetSession) return
+
+    const hasNumbers = targetSession.trainingData.some(item => item.type === 'number')
+    const hasStory = targetSession.trainingData.some(item => item.type === 'story')
+    const hasWords = targetSession.trainingData.some(item => item.type === 'word')
+    const isClimax = sessionNumber === 5 // 第5話は集大成
+
+    if (hasNumbers && !isClimax) {
+      setPhase('number-conversion')
+    } else if (hasLink(targetSession.trainingData) || (chapterId === 'chapter3' && !hasNumbers)) {
+      setPhase('link-method')
+    } else if (hasStory) {
+      setPhase('story-method')
+    } else if (isClimax || chapterId === 'chapter5') {
+       // クライマックスや第5章は宮殿のウォークスルーから開始
+      setPhase('walkthrough')
+    } else {
+      setPhase('walkthrough')
+    }
+  }, [chapterId, sessionNumber])
+
+  // ヘルパー関数: 連想法(LinkMethod)の判定
+  function hasLink(data: any[]) {
+    return data.some(item => item.type === 'word')
+  }
+
 
   const handlePalaceComplete = (newPalace: { name: string; places: string[] }) => {
     setPalace(newPalace)
