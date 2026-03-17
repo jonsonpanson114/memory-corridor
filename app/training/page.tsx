@@ -26,6 +26,8 @@ function TrainingPageContent() {
   const [phase, setPhase] = useState<TrainingPhase>('setup')
   const [palace, setPalace] = useState<{ name: string; places: string[] } | null>(null)
   const [userWords, setUserWords] = useState<Record<number, string>>({})
+  const [trainingData, setTrainingData] = useState<any[]>(session?.trainingData || [])
+  const [loadingItems, setLoadingItems] = useState(false)
   const router = useRouter()
 
   // 記憶の宮殿と適切なトレーニングフェーズをロード
@@ -35,13 +37,44 @@ function TrainingPageContent() {
       setPalace(existingPalace)
     }
 
-    // トレーニングデータの種類に基づいてフェーズを決定
-    const targetSession = getSession(chapterId, sessionNumber)
-    if (!targetSession) return
+    if (!session) return
 
+    // トレーニングアイテムの動的取得
+    async function fetchDynamicItems() {
+      setLoadingItems(true)
+      try {
+        // セッションから主要なトレーニングタイプを取得
+        const mainType = session?.trainingData[0]?.type || 'place'
+        
+        const response = await fetch('/api/generate-training', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            chapterId,
+            sessionNumber,
+            type: mainType,
+            count: session?.trainingData.length || 5
+          })
+        })
+
+        if (response.ok) {
+          const data = await response.json()
+          setTrainingData(data)
+        }
+      } catch (error) {
+        console.error('Failed to fetch dynamic training items:', error)
+        // エラー時はデフォルト(story-data.ts)のものを使用
+      } finally {
+        setLoadingItems(false)
+      }
+    }
+
+    fetchDynamicItems()
+
+    // トレーニングデータの種類に基づいてフェーズを決定
+    const targetSession = session
     const hasNumbers = targetSession.trainingData.some(item => item.type === 'number')
     const hasStory = targetSession.trainingData.some(item => item.type === 'story')
-    const hasWords = targetSession.trainingData.some(item => item.type === 'word')
     const isClimax = sessionNumber === 5 // 第5話は集大成
 
     if (hasNumbers && !isClimax) {
@@ -132,58 +165,68 @@ function TrainingPageContent() {
         </div>
       </div>
 
-      {phase === 'setup' && (
-        <PalaceSetup onComplete={handlePalaceComplete} />
+      {loadingItems ? (
+        <div className="flex-1 flex flex-col items-center justify-center">
+          <div className="w-12 h-12 border-4 border-accent border-t-transparent rounded-full animate-spin mb-4" />
+          <p className="font-serif text-accent animate-pulse">新しい訓練課題を生成中...</p>
+        </div>
+      ) : (
+        <>
+          {phase === 'setup' && (
+            <PalaceSetup onComplete={handlePalaceComplete} />
+          )}
+
+          {phase === 'walkthrough' && palace && (
+            <WalkThrough
+              items={trainingData}
+              places={palace.places}
+              onComplete={handleWalkThroughComplete}
+            />
+          )}
+
+          {phase === 'blank' && (
+            <BlankTime duration={30} onComplete={handleBlankComplete} />
+          )}
+
+          {phase === 'number-conversion' && session && (
+            <NumberConversion
+              numbers={trainingData.map(item => item.content)}
+              onComplete={handleNumberConversionComplete}
+            />
+          )}
+
+          {phase === 'link-method' && session && (
+            <LinkMethod
+              items={trainingData}
+              onComplete={handleLinkMethodComplete}
+            />
+          )}
+
+          {phase === 'story-method' && session && (
+            <StoryMethod
+              items={trainingData}
+              onComplete={handleStoryMethodComplete}
+            />
+          )}
+
+          {phase === 'palace-final' && palace && (
+            <WalkThrough
+              items={trainingData}
+              places={palace.places}
+              onComplete={handlePalaceFinalComplete}
+            />
+          )}
+
+          {phase === 'recall' && palace && (
+            <RecallInput
+              items={trainingData}
+              places={palace.places}
+              onSubmit={handleRecallSubmit}
+            />
+          )}
+        </>
       )}
 
-      {phase === 'walkthrough' && palace && (
-        <WalkThrough
-          items={session.trainingData}
-          places={palace.places}
-          onComplete={handleWalkThroughComplete}
-        />
-      )}
-
-      {phase === 'blank' && (
-        <BlankTime duration={30} onComplete={handleBlankComplete} />
-      )}
-
-      {phase === 'number-conversion' && session && (
-        <NumberConversion
-          numbers={session.trainingData.map(item => item.content)}
-          onComplete={handleNumberConversionComplete}
-        />
-      )}
-
-      {phase === 'link-method' && session && (
-        <LinkMethod
-          items={session.trainingData}
-          onComplete={handleLinkMethodComplete}
-        />
-      )}
-
-      {phase === 'story-method' && session && (
-        <StoryMethod
-          items={session.trainingData}
-          onComplete={handleStoryMethodComplete}
-        />
-      )}
-
-      {phase === 'palace-final' && palace && (
-        <WalkThrough
-          items={session.trainingData}
-          places={palace.places}
-          onComplete={handlePalaceFinalComplete}
-        />
-      )}
-
-      {phase === 'recall' && palace && (
-        <RecallInput
-          items={session.trainingData}
-          places={palace.places}
-          onSubmit={handleRecallSubmit}
-        />
-      )}
     </main>
   )
 }

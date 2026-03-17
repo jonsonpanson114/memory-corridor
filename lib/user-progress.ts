@@ -153,3 +153,18 @@ export function savePalace(palace: { name: string; places: string[] }) {
   localStorage.setItem(STORAGE_KEYS.PALACE, JSON.stringify(palace))
   return palace
 }
+
+export function clearProgress() {
+  if (typeof window === 'undefined') {
+    return
+  }
+  Object.values(STORAGE_KEYS).forEach((key) => {
+    localStorage.removeItem(key)
+  })
+  localStorage.removeItem('current-chapter')
+  localStorage.removeItem('current-session')
+  localStorage.removeItem('last-score')
+  localStorage.removeItem('training-answers')
+  localStorage.removeItem('training-palace')
+  localStorage.removeItem('story-method-order')
+}

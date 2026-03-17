@@ -98,11 +98,12 @@ export default function Home() {
         </motion.div>
 
         {/* サブメニュー */}
-        <div className="mt-6 space-y-2">
+        <div className="mt-8 space-y-4">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
+            className="flex flex-col gap-3"
           >
             <Link
               href="/diary"
@@ -110,6 +111,20 @@ export default function Home() {
             >
               記憶の日記を見る
             </Link>
+
+            <button
+              onClick={() => {
+                if (window.confirm('これまでの記憶を全て消去して、最初からやり直しますか？\nこの操作は取り消せません。')) {
+                  import('@/lib/user-progress').then(({ clearProgress }) => {
+                    clearProgress()
+                    window.location.reload()
+                  })
+                }
+              }}
+              className="block font-sans text-text-secondary/40 text-[10px] hover:text-red-400/60 transition-colors uppercase tracking-widest mt-4"
+            >
+              記憶を全て忘れる（進捗をリセット）
+            </button>
           </motion.div>
         </div>
 
