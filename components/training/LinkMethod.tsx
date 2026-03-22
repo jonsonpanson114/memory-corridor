@@ -33,6 +33,14 @@ export default function LinkMethod({ items, onComplete }: LinkMethodProps) {
   const previousItem = items[currentIndex - 1]
   const nextItem = items[currentIndex + 1]
 
+  if (!currentItem) {
+    return (
+      <div className="flex flex-col items-center justify-center p-12">
+        <p className="text-text-secondary">課題を読み込んでいます...</p>
+      </div>
+    )
+  }
+
   return (
     <div className="max-w-md mx-auto w-full">
       {/* ヘッダー */}

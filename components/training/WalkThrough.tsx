@@ -16,6 +16,14 @@ export default function WalkThrough({ items, places, onComplete }: WalkThroughPr
   const currentItem = items[currentItemIndex]
   const currentPlace = places[currentPlaceIndex] || ''
 
+  if (!currentItem) {
+    return (
+      <div className="flex flex-col items-center justify-center p-12">
+        <p className="text-text-secondary">課題を読み込んでいます...</p>
+      </div>
+    )
+  }
+
   const handleNext = () => {
     if (currentItemIndex < items.length - 1) {
       setCurrentItemIndex(currentItemIndex + 1)

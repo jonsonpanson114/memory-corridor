@@ -40,6 +40,15 @@ export default function NumberConversion({ numbers, onComplete }: NumberConversi
   }
 
   const currentNumber = numbers[currentIndex]
+  
+  if (!currentNumber) {
+    return (
+      <div className="flex flex-col items-center justify-center p-12">
+        <p className="text-text-secondary">課題を読み込んでいます...</p>
+      </div>
+    )
+  }
+
   const currentSound = conversionRules[currentNumber.split('')[0]] || '?'
 
   return (

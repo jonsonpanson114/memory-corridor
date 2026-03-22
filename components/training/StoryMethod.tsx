@@ -12,6 +12,14 @@ export default function StoryMethod({ items, onComplete }: StoryMethodProps) {
   const [fragments, setFragments] = useState(items)
   const [selectedFragment, setSelectedFragment] = useState<string | null>(null)
 
+  if (fragments.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center p-12">
+        <p className="text-text-secondary">課題を読み込んでいます...</p>
+      </div>
+    )
+  }
+
   const handleSelect = (id: string) => {
     if (selectedFragment === null) {
       setSelectedFragment(id)
