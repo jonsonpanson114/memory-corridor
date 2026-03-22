@@ -22,28 +22,29 @@ function TrainingPageContent() {
   const sessionNumber = parseInt(searchParams.get('session') || '1')
 
   const session = getSession(chapterId, sessionNumber)
-  const progress = getProgress()
   const [phase, setPhase] = useState<TrainingPhase>('setup')
   const [palace, setPalace] = useState<{ name: string; places: string[] } | null>(null)
-  const [userWords, setUserWords] = useState<Record<number, string>>({})
-  const [trainingData, setTrainingData] = useState<any[]>(session?.trainingData || [])
-  const [loadingItems, setLoadingItems] = useState(false)
+  const [trainingData, setTrainingData] = useState<any[]>([])
+  const [loadingItems, setLoadingItems] = useState(true)
+  const [hasMounted, setHasMounted] = useState(false)
   const router = useRouter()
 
-  // 記憶の宮殿と適切なトレーニングフェーズをロード
+  // 初期化とマウント状態の管理
   useEffect(() => {
+    setHasMounted(true)
     const existingPalace = getPalace()
     if (existingPalace) {
       setPalace(existingPalace)
     }
 
-    if (!session) return
+    if (!session) {
+      setLoadingItems(false)
+      return
+    }
 
     // トレーニングアイテムの動的取得
     async function fetchDynamicItems() {
-      setLoadingItems(true)
       try {
-        // セッションから主要なトレーニングタイプを取得
         const mainType = session?.trainingData[0]?.type || 'place'
         
         const response = await fetch('/api/generate-training', {
@@ -59,11 +60,17 @@ function TrainingPageContent() {
 
         if (response.ok) {
           const data = await response.json()
-          setTrainingData(data)
+          if (Array.isArray(data) && data.length > 0) {
+            setTrainingData(data)
+          } else {
+            setTrainingData(session?.trainingData || [])
+          }
+        } else {
+          setTrainingData(session?.trainingData || [])
         }
       } catch (error) {
         console.error('Failed to fetch dynamic training items:', error)
-        // エラー時はデフォルト(story-data.ts)のものを使用
+        setTrainingData(session?.trainingData || [])
       } finally {
         setLoadingItems(false)
       }
@@ -71,25 +78,35 @@ function TrainingPageContent() {
 
     fetchDynamicItems()
 
-    // トレーニングデータの種類に基づいてフェーズを決定
-    const targetSession = session
-    const hasNumbers = targetSession.trainingData.some(item => item.type === 'number')
-    const hasStory = targetSession.trainingData.some(item => item.type === 'story')
-    const isClimax = sessionNumber === 5 // 第5話は集大成
-
-    if (hasNumbers && !isClimax) {
-      setPhase('number-conversion')
-    } else if (hasLink(targetSession.trainingData) || (chapterId === 'chapter3' && !hasNumbers)) {
-      setPhase('link-method')
-    } else if (hasStory) {
-      setPhase('story-method')
-    } else if (isClimax || chapterId === 'chapter5') {
-       // クライマックスや第5章は宮殿のウォークスルーから開始
-      setPhase('walkthrough')
+    // フェーズの決定ロジック
+    if (!existingPalace) {
+      setPhase('setup')
     } else {
-      setPhase('walkthrough')
+      const targetSession = session
+      const hasNumbers = targetSession.trainingData.some(item => item.type === 'number')
+      const hasStory = targetSession.trainingData.some(item => item.type === 'story')
+      const isClimax = sessionNumber === 5
+
+      if (hasNumbers && !isClimax) {
+        setPhase('number-conversion')
+      } else if (hasLink(targetSession.trainingData) || (chapterId === 'chapter3' && !hasNumbers)) {
+        setPhase('link-method')
+      } else if (hasStory) {
+        setPhase('story-method')
+      } else {
+        setPhase('walkthrough')
+      }
     }
   }, [chapterId, sessionNumber])
+
+  // クライアントサイドでのみレンダリングを開始
+  if (!hasMounted) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="w-12 h-12 border-4 border-accent border-t-transparent rounded-full animate-spin" />
+      </div>
+    )
+  }
 
   // ヘルパー関数: 連想法(LinkMethod)の判定
   function hasLink(data: any[]) {
