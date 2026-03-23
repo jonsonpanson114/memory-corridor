@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import ScoreCandles from '@/components/result/ScoreCandles'
@@ -15,9 +15,12 @@ export default function ResultPage() {
   const [nextHint, setNextHint] = useState<string>('')
   const [currentChapter, setCurrentChapter] = useState<string>('chapter1')
   const [currentSession, setCurrentSession] = useState<number>(1)
+  const processedRef = useRef(false)
 
   useEffect(() => {
     async function fetchScore() {
+      if (processedRef.current) return
+      processedRef.current = true
       const answersStr = localStorage.getItem('training-answers')
       const palaceStr = localStorage.getItem('training-palace')
       const chapterId = localStorage.getItem('current-chapter') || 'chapter1'

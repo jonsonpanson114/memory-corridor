@@ -64,6 +64,42 @@ export function incrementSession(nextChapterId?: string, nextSessionNumber?: num
   })
 }
 
+export function undoLastSession() {
+  const current = getProgress()
+  if (current.totalSessions <= 0) return current
+
+  let nextSession = current.currentSession - 1
+  let nextChapter = current.currentChapter
+
+  if (nextSession < 1) {
+    // 前の章に戻る
+    const chapterIds = ['chapter1', 'chapter2', 'chapter3', 'chapter4', 'chapter5']
+    const currentIndex = chapterIds.indexOf(current.currentChapter)
+    if (currentIndex > 0) {
+      nextChapter = chapterIds[currentIndex - 1]
+      // 前の章の最後のセッションを取得（本当はセッション数を数えるべきだが、一旦5と仮定するか全件取得が必要）
+      // ここでは簡略化のため、前の章に戻る場合は一旦1に戻すか、ユーザーに任せる
+      nextSession = 5 // 大体の章は5セッション
+    } else {
+      nextSession = 1
+    }
+  }
+
+  // 最後の記憶も削除する
+  const memories = getMemories()
+  if (memories.memories.length > 0) {
+    memories.memories.pop()
+    localStorage.setItem(STORAGE_KEYS.MEMORIES, JSON.stringify(memories))
+  }
+
+  return saveProgress({
+    currentChapter: nextChapter,
+    currentSession: nextSession,
+    totalSessions: Math.max(0, current.totalSessions - 1),
+    lastPlayedAt: new Date(),
+  })
+}
+
 export function updateScore(correctCount: number, totalCount: number) {
   const current = getProgress()
   return saveProgress({

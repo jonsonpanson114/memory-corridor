@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { getMemories, getProgress } from '@/lib/user-progress'
+import { getMemories, getProgress, undoLastSession } from '@/lib/user-progress'
 
 interface MemoryFragment {
   id: string
@@ -57,7 +57,7 @@ export default function DiaryPage() {
 
       {/* 進捗サマリー */}
       <div className="max-w-md mx-auto w-full mb-8 p-4 bg-background/50 border border-text-secondary/20 rounded">
-        <div className="grid grid-cols-2 gap-4 text-center">
+        <div className="grid grid-cols-2 gap-4 text-center mb-4">
           <div>
             <p className="font-sans text-text-secondary text-xs mb-1">
               セッション数
@@ -77,6 +77,21 @@ export default function DiaryPage() {
             </p>
           </div>
         </div>
+
+        {progress.totalSessions > 0 && (
+          <button
+            onClick={() => {
+              if (confirm('直近のセッション記録と獲得した記憶を取り消しますか？')) {
+                undoLastSession()
+                setMemories(getMemories().memories)
+                setProgress(getProgress())
+              }
+            }}
+            className="w-full py-2 border border-accent/30 text-accent/70 hover:bg-accent/10 transition-colors rounded font-sans text-xs"
+          >
+            直近の記録を取り消す
+          </button>
+        )}
       </div>
 
       {/* 記憶の断片リスト */}
