@@ -5,6 +5,7 @@ const STORAGE_KEYS = {
   MEMORIES: 'user-memories',
   BRANCHES: 'story-branches',
   PALACE: 'user-palace',
+  HISTORY: 'session-history',
 }
 
 // ユーザー進捗管理
@@ -92,6 +93,13 @@ export function undoLastSession() {
     localStorage.setItem(STORAGE_KEYS.MEMORIES, JSON.stringify(memories))
   }
 
+  // 履歴も1つ削除する
+  const history = getHistory()
+  if (history.length > 0) {
+    history.pop()
+    localStorage.setItem(STORAGE_KEYS.HISTORY, JSON.stringify(history))
+  }
+
   return saveProgress({
     currentChapter: nextChapter,
     currentSession: nextSession,
@@ -106,6 +114,31 @@ export function updateScore(correctCount: number, totalCount: number) {
     totalCorrectAnswers: (current.totalCorrectAnswers || 0) + correctCount,
     lastPlayedAt: new Date(),
   })
+}
+
+// セッション履歴管理
+export function getHistory() {
+  if (typeof window === 'undefined') {
+    return []
+  }
+  const stored = localStorage.getItem(STORAGE_KEYS.HISTORY)
+  if (!stored) {
+    return []
+  }
+  return JSON.parse(stored)
+}
+
+export function saveSessionResult(session: any) {
+  if (typeof window === 'undefined') {
+    return []
+  }
+  const history = getHistory()
+  history.push({
+    ...session,
+    completedAt: new Date(),
+  })
+  localStorage.setItem(STORAGE_KEYS.HISTORY, JSON.stringify(history))
+  return history
 }
 
 // 記憶の断片管理

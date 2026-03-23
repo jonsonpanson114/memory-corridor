@@ -6,7 +6,7 @@ import Link from 'next/link'
 import ScoreCandles from '@/components/result/ScoreCandles'
 import NarrativeText from '@/components/result/NarrativeText'
 import { getSession, getChapter } from '@/lib/story-data'
-import { updateScore, incrementSession, unlockMemory, saveProgress, getProgress } from '@/lib/user-progress'
+import { updateScore, incrementSession, unlockMemory, saveProgress, getProgress, saveSessionResult } from '@/lib/user-progress'
 import type { ScoreResult } from '@/types/training'
 
 export default function ResultPage() {
@@ -109,6 +109,18 @@ export default function ResultPage() {
             totalCount: result.totalCount,
             timestamp: Date.now(),
           }))
+
+          // 詳細な履歴を保存
+          saveSessionResult({
+            chapterId,
+            sessionNumber,
+            items: session.trainingData,
+            answers,
+            score: {
+              correctCount: result.correctCount,
+              totalCount: result.totalCount,
+            }
+          })
         }
       } catch (error) {
         console.error('Failed to fetch score:', error)
