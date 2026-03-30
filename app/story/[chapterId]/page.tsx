@@ -93,7 +93,7 @@ function StoryPageContent({
       currentChapter: chapterId,
       currentSession: sessionNumber,
     })
-    router.push('/training')
+    router.push(`/training?chapter=${chapterId}&session=${sessionNumber}`)
   }
 
   if (!session) {

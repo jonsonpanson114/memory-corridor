@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
 import { getProgress } from '@/lib/user-progress'
+import PushNotificationToggle from '@/components/PushNotificationToggle'
 
 export default function Home() {
   const [progress, setProgress] = useState(getProgress())
@@ -131,6 +132,10 @@ export default function Home() {
         <p className="font-sans text-text-secondary/50 text-xs mt-8">
           毎日10〜15分の物語と記憶術トレーニング
         </p>
+
+        <div className="mt-4">
+          <PushNotificationToggle />
+        </div>
       </motion.div>
     </main>
   )

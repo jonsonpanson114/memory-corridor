@@ -173,20 +173,20 @@ export default function DiaryPage() {
               </p>
             </div>
           ) : (
-            <div className="space-y-6">
+            <div className="space-y-8 pb-12">
               {[...history].reverse().map((session, index) => (
                 <motion.div
                   key={index}
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
-                  className="p-4 bg-background/30 border border-text-secondary/10 rounded"
+                  className="p-6 bg-background/30 border border-text-secondary/10 rounded-lg shadow-sm"
                 >
-                  <div className="flex justify-between items-start mb-3">
+                  <div className="flex justify-between items-start mb-4 border-b border-text-secondary/5 pb-4">
                     <div>
-                      <p className="font-sans text-text-secondary text-[10px] uppercase tracking-wider">
+                      <p className="font-sans text-text-secondary text-[10px] uppercase tracking-tighter mb-1">
                         {formatDate(session.completedAt)}
                       </p>
-                      <h3 className="font-serif text-text-primary text-sm">
+                      <h3 className="font-serif text-text-primary text-lg">
                         {session.chapterId === 'chapter1' && '第一章'}
                         {session.chapterId === 'chapter2' && '第二章'}
                         {session.chapterId === 'chapter3' && '第三章'}
@@ -194,25 +194,56 @@ export default function DiaryPage() {
                         {session.chapterId === 'chapter5' && '第五章'}
                         {' '}セッション {session.sessionNumber}
                       </h3>
+                      {session.palace && (
+                        <p className="font-sans text-accent/70 text-xs mt-1">
+                          場所：{session.palace.name}
+                        </p>
+                      )}
                     </div>
                     <div className="text-right">
-                      <p className="font-sans text-accent text-xs font-bold">
-                        {session.score.correctCount} / {session.score.totalCount}
-                      </p>
+                      <div className="inline-block px-3 py-1 bg-accent/10 rounded-full border border-accent/20">
+                        <p className="font-sans text-accent text-sm font-bold">
+                          {session.score.correctCount} / {session.score.totalCount}
+                        </p>
+                      </div>
                     </div>
                   </div>
+
+                  {session.narrative && (
+                    <div className="mb-6 bg-accent/5 p-4 rounded border-l-2 border-accent/30 italic">
+                      <p className="font-serif text-text-primary text-sm leading-relaxed whitespace-pre-wrap">
+                        {session.narrative}
+                      </p>
+                    </div>
+                  )}
                   
-                  <div className="space-y-1 mt-2 border-t border-text-secondary/5 pt-2">
+                  <div className="space-y-3">
+                    <p className="font-sans text-text-secondary text-[10px] uppercase tracking-widest mb-2 border-b border-text-secondary/5 pb-1">
+                      配置された記憶の断片
+                    </p>
                     {session.items.map((item: any, i: number) => {
+                      const scoreDetail = session.itemScores?.find((s: any) => s.itemId === item.id)
+                      const isCorrect = scoreDetail ? scoreDetail.isCorrect : false
                       const answer = session.answers.find((a: any) => a.itemId === item.id)?.answer || '---'
+                      const place = session.palace?.places[i] || `地点 ${i + 1}`
+
                       return (
-                        <div key={i} className="flex justify-between text-[11px] gap-4">
-                          <span className="text-text-secondary truncate flex-1 leading-relaxed">
-                             {i + 1}. {item.content}
-                          </span>
-                          <span className="text-text-primary/70 shrink-0 italic">
-                            {answer}
-                          </span>
+                        <div key={i} className="flex flex-col gap-1 border-b border-text-secondary/5 pb-2 last:border-0">
+                          <div className="flex justify-between items-baseline gap-4">
+                            <span className="text-text-secondary text-xs flex-1">
+                              <span className="opacity-50 mr-2 font-mono text-[10px]">{place}</span>
+                              <span className="text-text-primary/90">{item.content}</span>
+                            </span>
+                            <span className={`text-[11px] font-bold shrink-0 ${isCorrect ? 'text-accent' : 'text-red-400/70'}`}>
+                              {isCorrect ? '✓ 想起済み' : '✗ 忘却'}
+                            </span>
+                          </div>
+                          <div className="flex justify-between text-[10px] pl-10 italic opacity-80">
+                            <span className="text-text-secondary">想起：{answer}</span>
+                            {scoreDetail?.feedback && (
+                              <span className="text-accent/60 max-w-[60%] text-right">{scoreDetail.feedback}</span>
+                            )}
+                          </div>
                         </div>
                       )
                     })}

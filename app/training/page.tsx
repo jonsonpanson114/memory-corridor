@@ -18,8 +18,11 @@ type TrainingPhase = 'setup' | 'walkthrough' | 'blank' | 'recall' | 'number-conv
 
 function TrainingPageContent() {
   const searchParams = useSearchParams()
-  const chapterId = searchParams.get('chapter') || 'chapter1'
-  const sessionNumber = parseInt(searchParams.get('session') || '1')
+  const progress = getProgress()
+  const chapterId = searchParams.get('chapter') || progress.currentChapter || 'chapter1'
+  const sessionNumber = parseInt(
+    searchParams.get('session') || String(progress.currentSession || 1)
+  )
 
   const session = getSession(chapterId, sessionNumber)
   const [phase, setPhase] = useState<TrainingPhase>('setup')

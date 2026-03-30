@@ -116,6 +116,9 @@ export default function ResultPage() {
             sessionNumber,
             items: session.trainingData,
             answers,
+            palace,
+            narrative: result.narrative,
+            itemScores: result.scores, // 個別の採点とフィードバック
             score: {
               correctCount: result.correctCount,
               totalCount: result.totalCount,
