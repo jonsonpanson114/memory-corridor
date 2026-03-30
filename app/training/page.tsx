@@ -65,15 +65,22 @@ function TrainingPageContent() {
           const data = await response.json()
           if (Array.isArray(data) && data.length > 0) {
             setTrainingData(data)
+            localStorage.setItem('training-items', JSON.stringify(data))
           } else {
-            setTrainingData(session?.trainingData || [])
+            const fallback = session?.trainingData || []
+            setTrainingData(fallback)
+            localStorage.setItem('training-items', JSON.stringify(fallback))
           }
         } else {
-          setTrainingData(session?.trainingData || [])
+          const fallback = session?.trainingData || []
+          setTrainingData(fallback)
+          localStorage.setItem('training-items', JSON.stringify(fallback))
         }
       } catch (error) {
         console.error('Failed to fetch dynamic training items:', error)
-        setTrainingData(session?.trainingData || [])
+        const fallback = session?.trainingData || []
+        setTrainingData(fallback)
+        localStorage.setItem('training-items', JSON.stringify(fallback))
       } finally {
         setLoadingItems(false)
       }

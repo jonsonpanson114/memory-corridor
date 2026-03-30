@@ -23,6 +23,7 @@ export default function ResultPage() {
       processedRef.current = true
       const answersStr = localStorage.getItem('training-answers')
       const palaceStr = localStorage.getItem('training-palace')
+      const itemsStr = localStorage.getItem('training-items') // 実際のお題を優先
       const chapterId = localStorage.getItem('current-chapter') || 'chapter1'
       const sessionNumber = parseInt(localStorage.getItem('current-session') || '1')
       const storedNextHint = localStorage.getItem('next-hint') || ''
@@ -45,6 +46,9 @@ export default function ResultPage() {
         return
       }
 
+      // 実際のお題を優先的に使用する。なければ静的データ。
+      const actualItems = itemsStr ? JSON.parse(itemsStr) : session.trainingData
+
       setNextHint(storedNextHint)
 
       try {
@@ -54,7 +58,7 @@ export default function ResultPage() {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            items: session.trainingData,
+            items: actualItems,
             answers,
             palace,
           }),
@@ -114,7 +118,7 @@ export default function ResultPage() {
           saveSessionResult({
             chapterId,
             sessionNumber,
-            items: session.trainingData,
+            items: actualItems,
             answers,
             palace,
             narrative: result.narrative,
