@@ -8,6 +8,7 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('push', (event) => {
   const origin = self.location.origin
+  const assetVersion = 'v5'
 
   if (!event.data) return
 
@@ -15,7 +16,8 @@ self.addEventListener('push', (event) => {
     title: '記憶の回廊',
     body: '今日の記憶術トレーニングを始めましょう。',
     url: '/',
-    icon: `${origin}/icon-192.png`,
+    icon: `${origin}/icon-192.png?${assetVersion}`,
+    badge: `${origin}/badge-monochrome-72.png?${assetVersion}`,
   }
 
   try {
@@ -27,7 +29,8 @@ self.addEventListener('push', (event) => {
   event.waitUntil(
     self.registration.showNotification(payload.title, {
       body: payload.body,
-      icon: payload.icon || `${origin}/icon-192.png`,
+      icon: payload.icon || `${origin}/icon-192.png?${assetVersion}`,
+      badge: payload.badge || `${origin}/badge-monochrome-72.png?${assetVersion}`,
       data: { url: payload.url || '/' },
       tag: 'memory-corridor-daily-reminder',
       renotify: true,

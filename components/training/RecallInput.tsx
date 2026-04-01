@@ -6,10 +6,11 @@ import { motion, AnimatePresence } from 'framer-motion'
 interface RecallInputProps {
   items: Array<{ id: string; content: string }>
   places: string[]
+  mode?: 'place' | 'list'
   onSubmit: (answers: Array<{ itemId: string; answer: string }>) => void
 }
 
-export default function RecallInput({ items, places, onSubmit }: RecallInputProps) {
+export default function RecallInput({ items, places, mode = 'place', onSubmit }: RecallInputProps) {
   const [currentStep, setCurrentStep] = useState(0)
   const [answers, setAnswers] = useState<Record<string, string>>({})
 
@@ -42,6 +43,17 @@ export default function RecallInput({ items, places, onSubmit }: RecallInputProp
   const currentPlace = places[currentStep] || '—'
   const progress = ((currentStep + 1) / items.length) * 100
 
+  // モードによるテキストの出し分け
+  const title = mode === 'place' ? '想起の扉 — 場所法' : '想起の扉 — 連想と再構成'
+  const subtitle = mode === 'place' 
+    ? '記憶の宮殿を歩いて、そこに置いたものを思い出してください'
+    : '記憶の糸をたぐり、順番にアイテムを思い出してください'
+  const locationLabel = mode === 'place' ? 'Location' : 'Sequence'
+  const currentTarget = mode === 'place' ? currentPlace : `${currentStep + 1}つ目の記憶`
+  const hintText = mode === 'place'
+    ? '目を閉じて、その場所に置いてあるものの感触や匂いを思い出して...'
+    : '前のアイテムから繋がったイメージの鎖を、ゆっくりとたどって...'
+
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.95 }}
@@ -50,10 +62,10 @@ export default function RecallInput({ items, places, onSubmit }: RecallInputProp
     >
       <div className="text-center mb-8">
         <h2 className="font-serif text-2xl text-text-primary mb-2">
-          想起の扉
+          {title}
         </h2>
         <p className="font-sans text-text-secondary text-sm">
-          記憶の宮殿を歩いて、そこに置いたものを思い出してください
+          {subtitle}
         </p>
       </div>
 
@@ -78,10 +90,10 @@ export default function RecallInput({ items, places, onSubmit }: RecallInputProp
           >
             <div className="p-6 bg-background/40 border border-text-secondary/20 rounded-xl">
               <p className="font-sans text-text-secondary text-xs uppercase tracking-widest mb-1 text-center">
-                Location {currentStep + 1}
+                {locationLabel} {currentStep + 1}
               </p>
               <h3 className="font-serif text-xl text-text-primary text-center mb-6">
-                {currentPlace}
+                {currentTarget}
               </h3>
 
               <div className="relative">
@@ -102,7 +114,7 @@ export default function RecallInput({ items, places, onSubmit }: RecallInputProp
             </div>
 
             <p className="font-sans text-text-secondary/60 text-xs text-center italic">
-              目を閉じて、その場所に置いてあるものの感触や匂いを思い出して...
+              {hintText}
             </p>
           </motion.div>
         </AnimatePresence>
@@ -130,7 +142,7 @@ export default function RecallInput({ items, places, onSubmit }: RecallInputProp
             !answers[currentItem.id]?.trim() ? 'opacity-50 grayscale' : ''
           }`}
         >
-          {currentStep < items.length - 1 ? '次の場所へ' : '答えを使い切る'}
+          {currentStep < items.length - 1 ? (mode === 'place' ? '次の場所へ' : '次の記憶へ') : '答えを使い切る'}
         </motion.button>
       </div>
 

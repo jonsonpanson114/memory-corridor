@@ -10,11 +10,12 @@ import RecallInput from '@/components/training/RecallInput'
 import NumberConversion from '@/components/training/NumberConversion'
 import LinkMethod from '@/components/training/LinkMethod'
 import StoryMethod from '@/components/training/StoryMethod'
+import MethodExplanation from '@/components/training/MethodExplanation'
 import { getSession } from '@/lib/story-data'
 import { getPalace, savePalace, getProgress, saveProgress } from '@/lib/user-progress'
 import { useRouter } from 'next/navigation'
 
-type TrainingPhase = 'setup' | 'walkthrough' | 'blank' | 'recall' | 'number-conversion' | 'link-method' | 'story-method' | 'palace-final'
+type TrainingPhase = 'setup' | 'explanation' | 'walkthrough' | 'blank' | 'recall' | 'number-conversion' | 'link-method' | 'story-method' | 'palace-final'
 
 function TrainingPageContent() {
   const searchParams = useSearchParams()
@@ -92,20 +93,7 @@ function TrainingPageContent() {
     if (!existingPalace) {
       setPhase('setup')
     } else {
-      const targetSession = session
-      const hasNumbers = targetSession.trainingData.some(item => item.type === 'number')
-      const hasStory = targetSession.trainingData.some(item => item.type === 'story')
-      const isClimax = sessionNumber === 5
-
-      if (hasNumbers && !isClimax) {
-        setPhase('number-conversion')
-      } else if (hasLink(targetSession.trainingData) || (chapterId === 'chapter3' && !hasNumbers)) {
-        setPhase('link-method')
-      } else if (hasStory) {
-        setPhase('story-method')
-      } else {
-        setPhase('walkthrough')
-      }
+      setPhase('explanation')
     }
   }, [chapterId, sessionNumber])
 
@@ -123,11 +111,37 @@ function TrainingPageContent() {
     return data.some(item => item.type === 'word')
   }
 
+  // 記憶法のタイプを取得
+  const getMethodType = () => {
+    if (!session) return 'place'
+    if (session.trainingData.some(item => item.type === 'number')) return 'number'
+    if (session.trainingData.some(item => item.type === 'word')) return 'word'
+    if (session.trainingData.some(item => item.type === 'story')) return 'story'
+    return 'place'
+  }
 
   const handlePalaceComplete = (newPalace: { name: string; places: string[] }) => {
     setPalace(newPalace)
     savePalace(newPalace)
-    setPhase('walkthrough')
+    setPhase('explanation')
+  }
+
+  const handleExplanationComplete = () => {
+    const targetSession = session
+    if (!targetSession) return
+
+    const method = getMethodType()
+    const isClimax = sessionNumber === 5
+
+    if (method === 'number' && !isClimax) {
+      setPhase('number-conversion')
+    } else if (method === 'word' || (chapterId === 'chapter3' && method !== 'number')) {
+      setPhase('link-method')
+    } else if (method === 'story') {
+      setPhase('story-method')
+    } else {
+      setPhase('walkthrough')
+    }
   }
 
   const handleWalkThroughComplete = () => {
@@ -139,12 +153,10 @@ function TrainingPageContent() {
   }
 
   const handleNumberConversionComplete = () => {
-    // NumberConversionコンポーネント内でlocalStorageに保存されるので、ここでは空白時間へ進むだけ
     setPhase('blank')
   }
 
   const handleLinkMethodComplete = () => {
-    // LinkMethodコンポーネント内でlocalStorageに保存されるので、ここでは空白時間へ進むだけ
     setPhase('blank')
   }
 
@@ -154,16 +166,12 @@ function TrainingPageContent() {
   }
 
   const handlePalaceFinalComplete = () => {
-    // 第五章の記憶の宮殿統合が完了したら、空白時間へ
     setPhase('blank')
   }
 
   const handleRecallSubmit = (answers: Array<{ itemId: string; answer: string }>) => {
-    // 結果をローカルストレージに保存
     localStorage.setItem('training-answers', JSON.stringify(answers))
     localStorage.setItem('training-palace', JSON.stringify(palace))
-
-    // 結果画面へ遷移
     router.push('/result')
   }
 
@@ -174,6 +182,8 @@ function TrainingPageContent() {
       </div>
     )
   }
+
+  const methodType = getMethodType()
 
   return (
     <main className="min-h-screen flex flex-col p-4 md:p-8">
@@ -201,6 +211,13 @@ function TrainingPageContent() {
         <>
           {phase === 'setup' && (
             <PalaceSetup onComplete={handlePalaceComplete} />
+          )}
+
+          {phase === 'explanation' && (
+            <MethodExplanation 
+              type={methodType as any} 
+              onComplete={handleExplanationComplete} 
+            />
           )}
 
           {phase === 'walkthrough' && palace && (
@@ -248,12 +265,12 @@ function TrainingPageContent() {
             <RecallInput
               items={trainingData}
               places={palace.places}
+              mode={methodType === 'word' || methodType === 'story' ? 'list' : 'place'}
               onSubmit={handleRecallSubmit}
             />
           )}
         </>
       )}
-
     </main>
   )
 }

@@ -10,9 +10,11 @@ type PushPayload = {
   body: string
   url?: string
   icon?: string
+  badge?: string
 }
 
 const APP_ORIGIN = (process.env.NEXT_PUBLIC_APP_ORIGIN || 'https://memory-corridor.vercel.app').replace(/\/$/, '')
+const PUSH_ASSET_VERSION = 'v5'
 
 function ensureVapidConfigured(): void {
   const publicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY?.trim()
@@ -31,7 +33,8 @@ function getDailyPayload(): PushPayload {
     title: '記憶の回廊 | 今日の扉',
     body: 'ろうそくが灯っています。12時の回廊へ。',
     url: '/',
-    icon: `${APP_ORIGIN}/icon-192.png`,
+    icon: `${APP_ORIGIN}/icon-192.png?${PUSH_ASSET_VERSION}`,
+    badge: `${APP_ORIGIN}/badge-monochrome-72.png?${PUSH_ASSET_VERSION}`,
   }
 }
 

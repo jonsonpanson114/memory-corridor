@@ -55,6 +55,15 @@ export default function PushNotificationToggle() {
 
       const registration = await navigator.serviceWorker.register('/sw.js', { updateViaCache: 'none' })
       await registration.update()
+      const existing = await registration.pushManager.getSubscription()
+      if (existing) {
+        await fetch('/api/push/unsubscribe', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ endpoint: existing.endpoint }),
+        })
+        await existing.unsubscribe()
+      }
       const subscription = await registration.pushManager.subscribe({
         userVisibleOnly: true,
         applicationServerKey: urlBase64ToUint8Array(publicVapidKey) as BufferSource,
